@@ -1,47 +1,86 @@
-# Agentic Azure App Service app with Microsoft Agent Framework and Microsoft Foundry
+# AI Development Primitives Lab
 
-This repository demonstrates how to build a modern .NET web application that integrates with both Microsoft Agent Framework and Foundry Agent Service. It provides a simple CRUD task list and two interactive chat agents.
+A hands-on training lab for learning the building blocks of AI-assisted development — **instructions, prompts, MCP, agents, skills, hooks, plugins**, and spec-driven development with OpenSpec — using a small .NET app as the playground. The labs work in any coding-agent harness; nothing here assumes one vendor.
 
-## Getting Started
+The playground app is a Blazor Server task list with a built-in chat agent. It is forked from the Azure sample [app-service-agentic-semantic-kernel-ai-foundry-agent](https://github.com/Azure-Samples/app-service-agentic-semantic-kernel-ai-foundry-agent), which accompanies the tutorial [Build an agentic web app in Azure App Service with Microsoft Agent Framework or Foundry Agent Service (.NET)](https://learn.microsoft.com/azure/app-service/tutorial-ai-agent-web-app-semantic-kernel-foundry-dotnet). Credit to the original authors.
 
-See [Tutorial: Build an agentic web app in Azure App Service with Microsoft Agent Framework or Foundry Agent Service (.NET)](https://learn.microsoft.com/azure/app-service/tutorial-ai-agent-web-app-semantic-kernel-foundry-dotnet).
+## Prerequisites
 
-## Features
+- [.NET 10 SDK](https://dotnet.microsoft.com/download) (pinned in `global.json`)
+- [Node.js](https://nodejs.org/) 22.20 or later
+- [Git](https://git-scm.com/)
+- Chrome or Chromium
+- **A coding-agent harness of your choice** (see [Choose your harness](#choose-your-harness))
 
-- **Task List**: Simple CRUD web app application.
-- **Microsoft Agent Framework Agent**: Chat with an agent powered by Microsoft Agent Framework.
-- **Foundry Agent Service**: Chat with an agent created in Microsoft Foundry portal.
-- **OpenAPI Schema**: Enables integration with external agents.
-- **App Service authentication**: Infrastructure enables Microsoft Entra authentication for the Blazor app and all API endpoints.
-
-## Security configuration note
-
-The Bicep template enables App Service authentication (`authsettingsV2`) with
-Microsoft Entra ID. The Microsoft Graph Bicep extension creates the tenant-local
-app registration, service principal, and federated identity credential. App
-Service uses a user-assigned managed identity as its client assertion, so the
-authentication setup is fully declarative and does not use client secrets.
-
-When a Foundry OpenAPI tool calls the protected task API, configure the parent
-Foundry resource identity's application ID in the AZD environment:
+Check everything at once:
 
 ```bash
-azd env set AZURE_AI_FOUNDRY_ACCOUNT_CLIENT_ID <application-id>
-azd provision
+node scripts/doctor.mjs
 ```
 
-The deployment prints the managed identity audience to use in the OpenAPI tool.
-When you run `azd down`, the template also deletes the tenant-level Entra
-application created for App Service authentication.
+> `scripts/doctor.mjs` is being added alongside the labs.
 
-## Project Structure
+## Run and test
 
-- `src/CRUDTasksWithAgent/Components/Layout/NavMenu.razor` — Sidebar navigation menu.
-- `src/CRUDTasksWithAgent/Components/Layout/MainLayout.razor` — Main layout with sidebar and content area.
-- `src/CRUDTasksWithAgent/Components/Pages/TaskList.razor` — Task list CRUD UI.
-- `src/CRUDTasksWithAgent/Components/Pages/AgentFrameworkAgent.razor` — Microsoft Agent Framework chat agent UI.
-- `src/CRUDTasksWithAgent/Components/Pages/FoundryAgent.razor` — Foundry Agent Service chat UI (uses Microsoft Foundry SDK).
-- `src/CRUDTasksWithAgent/Models/` — Data models for tasks and chat messages.
-- `src/CRUDTasksWithAgent/Services/` — Service classes for task management and agent providers.
-- `Plugins/` — Example plugin for task CRUD operations.
-- `infra/` — Bicep and parameter files for Azure deployment.
+```bash
+dotnet run --project src/CRUDTasksWithAgent   # http://localhost:5280
+dotnet test                                   # runs tests/CRUDTasksWithAgent.Tests
+```
+
+| URL | What |
+|---|---|
+| http://localhost:5280/ | Task list (demo tasks are seeded in Development) |
+| http://localhost:5280/agentfx | Chat with the app agent |
+| http://localhost:5280/api/tasks | REST API |
+| http://localhost:5280/openapi/v1.json | OpenAPI document |
+
+Data is held in memory, so it resets every time the app restarts.
+
+## Two kinds of agent
+
+This lab involves two different agents. Keep them apart:
+
+| | **App agent** | **Coding agent** |
+|---|---|---|
+| Where it lives | Inside the product, at `/agentfx` | In your harness (terminal, editor, IDE) |
+| What it does | Manages tasks for the app's users through the task tools | Reads, edits and tests this repository for you |
+| Built with | Microsoft Agent Framework (C#) | Claude Code, GitHub Copilot, Cursor, etc. |
+| Model | Chosen by `Llm:Provider` (scripted by default) | Chosen in your harness |
+
+The labs ask you to use the coding agent to change the app agent. When a lab says "agent" without a qualifier, it names which one.
+
+## App-agent model providers
+
+By default the app agent runs on a deterministic, offline **scripted model** — no keys, no network, same answer every time. You can switch to GitHub Models, Ollama, OpenAI or Azure OpenAI with configuration only. See [docs/model-providers.md](docs/model-providers.md) for settings and the scripted command list.
+
+## Choose your harness
+
+| Tier | Harnesses |
+|---|---|
+| Tier 1 (fully supported) | Claude Code, GitHub Copilot (VS Code and CLI), Cursor |
+| Best effort | Codex and other agents that support project instruction files or MCP |
+
+Labs give a per-harness tab for each tier-1 harness wherever the file names or menus differ. Pick one and stay with it; you can compare with others afterwards.
+
+## Labs
+
+Lab guides live in the `labs/` folder, which is being added. Start there once it lands. Each lab can be validated with the harness-free checker `node scripts/check-lab.mjs NN` (where `NN` is the lab number), also being added.
+
+For background reading:
+
+- [docs/architecture.md](docs/architecture.md) — how the app fits together
+- [docs/backlog.md](docs/backlog.md) — small features used for spec-driven labs
+- [docs/model-providers.md](docs/model-providers.md) — app-agent models and scripted commands
+
+## Troubleshooting
+
+- **Port in use.** The app listens on 5280 (HTTP) by default. Stop the other process, or run with another URL: `dotnet run --project src/CRUDTasksWithAgent --urls http://localhost:5290`.
+- **HTTPS certificate errors.** Only needed if you use the `https` launch profile. Run `dotnet dev-certs https --trust`.
+- **`/_framework/blazor.web.js` returns 404 or the page isn't interactive.** You are probably running with the wrong .NET version. Run `dotnet --version` from the repository root; it should report a 10.x SDK (see `global.json`).
+- **Build warnings.** Some lint warnings are expected and deliberate; labs ask you to deal with them. A baseline list is being added at `docs/lint-baseline.md`.
+- **Agent page says it isn't configured.** Check the application log; provider construction errors are logged there. See [docs/model-providers.md](docs/model-providers.md).
+- **Foundry page shows an info message.** The Foundry agent (`/foundryagent`) is a stretch module: its menu entry appears only when `Features:Foundry` is `true`, and it also needs `FoundryProjectEndpoint` and `FoundryAgentName`. You do not need it for the core labs.
+
+## Deploying to Azure (optional stretch)
+
+The repository includes Bicep templates (`infra/`) and an `azure.yaml` for Azure Developer CLI deployment to App Service with Microsoft Entra authentication. This is not required for any core lab. See [docs/deploy-to-azure.md](docs/deploy-to-azure.md).
