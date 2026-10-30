@@ -90,4 +90,6 @@ app.MapDelete("/api/tasks/{id}", async (int id, TaskService taskService) =>
 .WithDescription("Deletes a task by its ID.")
 .WithName("DeleteTask");
 
+app.SeedDemoData();
+
 app.Run();
