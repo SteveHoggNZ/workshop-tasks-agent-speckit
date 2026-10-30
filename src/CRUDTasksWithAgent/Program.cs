@@ -16,6 +16,9 @@ builder.Services.AddDbContext<TasksDbContext>(options =>
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<TaskCrudTool>();
 
+// Register the chat client factory (selects the model provider from the Llm config section)
+builder.Services.AddSingleton<IChatClientFactory, ChatClientFactory>();
+
 // Register Agent Framework provider (for AgentFrameworkAgent.razor)
 builder.Services.AddScoped<IAgentFrameworkProvider, AgentFrameworkProvider>();
 
@@ -93,3 +96,5 @@ app.MapDelete("/api/tasks/{id}", async (int id, TaskService taskService) =>
 app.SeedDemoData();
 
 app.Run();
+
+public partial class Program { }

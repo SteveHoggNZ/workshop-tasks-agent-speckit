@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/CRUDTasksWithAgent/CRUDTasksWithAgent.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CRUDTasksWithAgent.Tests/CRUDTasksWithAgent.Tests.csproj" />
+  </Folder>
 </Solution>
