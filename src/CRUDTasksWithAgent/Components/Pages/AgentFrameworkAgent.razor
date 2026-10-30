@@ -8,9 +8,9 @@
 @if (AgentProvider.Agent == null)
 {
     <div class="alert alert-warning" role="alert">
-        The Agent Framework agent is not configured. Please set the required environment 
-        variables (<code>ModelDeployment</code> and <code>AzureOpenAIEndpoint</code>) 
-        in your appsettings or environment to enable this feature.
+        The Agent Framework agent is not configured. Please set <code>Llm:Provider</code> 
+        (Scripted, GitHubModels, Ollama, OpenAI or AzureOpenAI) and the settings that provider 
+        needs in your appsettings or environment to enable this feature.
     </div>
 }
 else

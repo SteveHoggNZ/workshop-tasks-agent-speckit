@@ -26,31 +26,15 @@ namespace CRUDTasksWithAgent.Services
         public AIAgent? Agent => _lazyAgentData.Value.Agent;
         public AgentThread? Thread => _lazyAgentData.Value.Thread;
 
-        public AgentFrameworkProvider(IConfiguration config, IServiceProvider sp)
+        public AgentFrameworkProvider(IChatClientFactory chatClientFactory, IServiceProvider sp, ILogger<AgentFrameworkProvider> logger)
         {
             // Use Lazy<T> to defer agent and thread creation until first access
             _lazyAgentData = new Lazy<(AIAgent?, AgentThread?)>(() =>
             {
-                // Get Azure OpenAI configuration
-                var deployment = config["ModelDeployment"];
-                var endpoint = config["AzureOpenAIEndpoint"];
-                if (string.IsNullOrWhiteSpace(deployment) || string.IsNullOrWhiteSpace(endpoint))
-                {
-                    return (null, null);
-                }
-
                 try
                 {
-                    // An API key avoids az login / Entra ID; without it, fall back to DefaultAzureCredential
-                    var apiKey = config["AzureOpenAIApiKey"];
-                    var openAIClient = string.IsNullOrWhiteSpace(apiKey)
-                        ? new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential())
-                        : new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
-
-                    // Create IChatClient
-                    IChatClient chatClient = openAIClient
-                        .GetChatClient(deployment)
-                        .AsIChatClient();
+                    // Create IChatClient for the configured Llm:Provider
+                    IChatClient chatClient = chatClientFactory.Create();
 
                     // Get TaskCrudTool instance from service provider
                     var taskCrudTool = sp.GetRequiredService<TaskCrudTool>();
@@ -75,8 +59,9 @@ namespace CRUDTasksWithAgent.Services
 
                     return (agent, thread);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    logger.LogError(ex, "Failed to create the Agent Framework agent");
                     // If agent creation fails, return null
                     // This prevents the entire app from crashing
                     return (null, null);
