@@ -29,6 +29,6 @@ hooks:
       continueOnError: false
 services:
   web:
-    project: .
+    project: ./src/CRUDTasksWithAgent
     language: csharp
     host: appservice

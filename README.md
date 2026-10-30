@@ -36,12 +36,12 @@ application created for App Service authentication.
 
 ## Project Structure
 
-- `Components/Layout/NavMenu.razor` — Sidebar navigation menu.
-- `Components/Layout/MainLayout.razor` — Main layout with sidebar and content area.
-- `Components/Pages/TaskList.razor` — Task list CRUD UI.
-- `Components/Pages/AgentFrameworkAgent.razor` — Microsoft Agent Framework chat agent UI.
-- `Components/Pages/FoundryAgent.razor` — Foundry Agent Service chat UI (uses Microsoft Foundry SDK).
-- `Models/` — Data models for tasks and chat messages.
-- `Services/` — Service classes for task management and agent providers.
+- `src/CRUDTasksWithAgent/Components/Layout/NavMenu.razor` — Sidebar navigation menu.
+- `src/CRUDTasksWithAgent/Components/Layout/MainLayout.razor` — Main layout with sidebar and content area.
+- `src/CRUDTasksWithAgent/Components/Pages/TaskList.razor` — Task list CRUD UI.
+- `src/CRUDTasksWithAgent/Components/Pages/AgentFrameworkAgent.razor` — Microsoft Agent Framework chat agent UI.
+- `src/CRUDTasksWithAgent/Components/Pages/FoundryAgent.razor` — Foundry Agent Service chat UI (uses Microsoft Foundry SDK).
+- `src/CRUDTasksWithAgent/Models/` — Data models for tasks and chat messages.
+- `src/CRUDTasksWithAgent/Services/` — Service classes for task management and agent providers.
 - `Plugins/` — Example plugin for task CRUD operations.
 - `infra/` — Bicep and parameter files for Azure deployment.
