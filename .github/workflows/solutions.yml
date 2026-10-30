@@ -1,0 +1,61 @@
+name: solutions
+
+# Verifies every solution/NN-* branch still builds, passes tests and satisfies its lab check.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 14 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.branches.outputs.matrix }}
+      any: ${{ steps.branches.outputs.any }}
+    steps:
+      - name: List solution branches
+        id: branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branches=$(git ls-remote --heads "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" 'refs/heads/solution/*' \
+            | sed 's#.*refs/heads/##' | grep -E '^solution/[0-9]{2}-' || true)
+          json=$(printf '%s\n' "$branches" | grep -v '^$' \
+            | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({branch: ., lab: (capture("^solution/(?<n>[0-9]{2})-").n)})' || echo '[]')
+          [ -z "$json" ] && json='[]'
+          echo "matrix={\"include\":$json}" >> "$GITHUB_OUTPUT"
+          if [ "$json" = "[]" ]; then echo "any=false" >> "$GITHUB_OUTPUT"; else echo "any=true" >> "$GITHUB_OUTPUT"; fi
+          echo "Found: $json"
+
+  verify:
+    needs: discover
+    if: needs.discover.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    name: ${{ matrix.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build
+        run: dotnet build CRUDTasksWithAgent.slnx
+
+      - name: Test
+        run: dotnet test CRUDTasksWithAgent.slnx --no-build
+
+      - name: Lab check
+        run: node scripts/check-lab.mjs ${{ matrix.lab }}
