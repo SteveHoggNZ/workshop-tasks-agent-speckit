@@ -1,5 +1,6 @@
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI;
+using Azure;
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using CRUDTasksWithAgent.Tools;
@@ -40,10 +41,14 @@ namespace CRUDTasksWithAgent.Services
 
                 try
                 {
+                    // An API key avoids az login / Entra ID; without it, fall back to DefaultAzureCredential
+                    var apiKey = config["AzureOpenAIApiKey"];
+                    var openAIClient = string.IsNullOrWhiteSpace(apiKey)
+                        ? new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential())
+                        : new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+
                     // Create IChatClient
-                    IChatClient chatClient = new AzureOpenAIClient(
-                            new Uri(endpoint),
-                            new DefaultAzureCredential())
+                    IChatClient chatClient = openAIClient
                         .GetChatClient(deployment)
                         .AsIChatClient();
 
