@@ -3,9 +3,17 @@
 @using OpenAI.Responses
 @inject CRUDTasksWithAgent.Services.IFoundryAgentProvider FoundryProvider
 @inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
 @rendermode InteractiveServer
 
-@if (FoundryProvider.ResponseClient == null)
+@if (!Configuration.GetValue<bool>("Features:Foundry"))
+{
+    <div class="alert alert-info" role="alert">
+        Foundry Agent Service is a stretch module. Set <code>Features:Foundry</code> to true and configure
+        <code>FoundryProjectEndpoint</code> and <code>FoundryAgentName</code> to enable it.
+    </div>
+}
+else if (FoundryProvider.ResponseClient == null)
 {
     <div class="alert alert-warning" role="alert">
         The Foundry agent is not configured. Please set the required environment variables 
