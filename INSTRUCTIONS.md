@@ -53,7 +53,16 @@ specify extension add assess
 
 This adds the five `speckit-assess-*` skills used in steps 2–6 below.
 
-### 6. Check your agent can see the skills
+### 6. Turn on automatic commits
+
+```bash
+specify extension add git
+uv run --with pyyaml python scripts/configure_speckit_git.py .
+```
+
+After this, every step commits itself with a fixed message such as `[Spec Kit] Add specification`, and specify creates a feature branch (`NNN-<feature>`). Nobody has to remember to commit, and you can compare or roll back any step. On another repo, copy `scripts/configure_speckit_git.py` across first. [docs/speckit-setup.md](docs/speckit-setup.md) explains exactly what this changes and why.
+
+### 7. Check your agent can see the skills
 
 Start your agent in the repo folder and ask it:
 
@@ -61,13 +70,15 @@ Start your agent in the repo folder and ask it:
 List the skills available to you whose names start with speckit.
 ```
 
-You should see the `speckit-*` and `speckit-assess-*` skills. If not, restart the agent from the repo root.
+You should see the `speckit-*`, `speckit-assess-*` and `speckit-git-*` skills. If not, restart the agent from the repo root.
 
-Commit at this point (`git add -A && git commit -m "Install Spec Kit"`) so the setup is separate from the feature work.
+Commit at this point (`git add -A && git commit -m "Install Spec Kit"`) so the setup is separate from the feature work. From here on, the steps commit themselves.
+
+> **On branch `demo/01-init`, install steps 3–6 are already done.** See [docs/speckit-setup.md](docs/speckit-setup.md) for how it was configured.
 
 ## The steps
 
-Run the steps **in your agent's chat, one at a time**, and review the file each one writes before moving on. Each step writes a Markdown file that the next step reads, so you can start a fresh session between steps without losing context. Committing after each step lets you compare and roll back.
+Run the steps **in your agent's chat, one at a time**, and review the file each one writes before moving on. Each step writes a Markdown file that the next step reads, so you can start a fresh session between steps without losing context. Each step also **commits itself**; glance at `git log --oneline` to confirm, and run `/speckit-git-commit` if one is missing.
 
 | # | Step (Copilot / Claude) | What it does | What it writes | Why it matters |
 | ---: | --- | --- | --- | --- |
