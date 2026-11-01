@@ -114,6 +114,28 @@ public class ScriptedModelTests
     }
 
     [Fact]
+    public async Task Suggestions_EachExampleRoutesToItsOwnTool()
+    {
+        foreach (var intent in ScriptedIntents.All)
+        {
+            var call = await FirstCall(intent.Example);
+
+            Assert.Equal(intent.ToolName, call.Name);
+            Assert.Contains(intent.Example, ScriptedIntents.Suggestions);
+        }
+    }
+
+    [Fact]
+    public async Task Suggestions_HelpReturnsHelpText()
+    {
+        Assert.Contains("help", ScriptedIntents.Suggestions);
+
+        var response = await new ScriptedChatClient().GetResponseAsync([new ChatMessage(ChatRole.User, "help")]);
+
+        Assert.Equal(ScriptedIntents.HelpText, response.Text);
+    }
+
+    [Fact]
     public void IntentToolNames_MatchRegisteredTools()
     {
         var tool = new TaskCrudTool(new TaskService(TestDb.Create()));

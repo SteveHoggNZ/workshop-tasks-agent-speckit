@@ -16,7 +16,8 @@ namespace CRUDTasksWithAgent.Services.Scripted
                 Pattern: new Regex(@"^\s*(?:add|create)\s+(?:a\s+)?task\s*:?\s+(?<title>.+?)\s*$", Options),
                 ToolName: "CreateTask",
                 Arguments: m => new Dictionary<string, object?> { ["title"] = m.Groups["title"].Value },
-                Usage: "add task <title>"),
+                Usage: "add task <title>",
+                Example: "add task Buy milk"),
 
             new(
                 Name: "list",
@@ -24,6 +25,7 @@ namespace CRUDTasksWithAgent.Services.Scripted
                 ToolName: "ReadTasks",
                 Arguments: _ => new Dictionary<string, object?>(),
                 Usage: "list tasks",
+                Example: "list tasks",
                 Summarize: (_, result) => FormatTaskList(result)),
 
             new(
@@ -31,22 +33,30 @@ namespace CRUDTasksWithAgent.Services.Scripted
                 Pattern: new Regex(@"^\s*(?:complete|done)\s+(?:task\s+)?#?(\d)", Options),
                 ToolName: "UpdateTask",
                 Arguments: m => new Dictionary<string, object?> { ["id"] = m.Groups[1].Value, ["isComplete"] = true },
-                Usage: "complete <id>"),
+                Usage: "complete <id>",
+                Example: "complete 2"),
 
             new(
                 Name: "rename",
                 Pattern: new Regex(@"^\s*rename\s+(?:task\s+)?#?(\d)\S*\s+to\s+(?<title>.+?)\s*$", Options),
                 ToolName: "UpdateTask",
                 Arguments: m => new Dictionary<string, object?> { ["id"] = m.Groups[1].Value, ["title"] = m.Groups["title"].Value },
-                Usage: "rename <id> to <title>"),
+                Usage: "rename <id> to <title>",
+                Example: "rename 3 to Prepare the Spec Kit demo"),
 
             new(
                 Name: "delete",
                 Pattern: new Regex(@"^\s*(?:delete|remove)\s+(?:task\s+)?#?(\d)", Options),
                 ToolName: "DeleteTask",
                 Arguments: m => new Dictionary<string, object?> { ["id"] = m.Groups[1].Value },
-                Usage: "delete <id>"),
+                Usage: "delete <id>",
+                Example: "delete 5"),
         };
+
+        // Suggested prompts for the chat page: one working example per command, plus "help",
+        // which any unrecognised message also returns.
+        public static IReadOnlyList<string> Suggestions { get; } =
+            All.Select(i => i.Example).Append("help").ToList();
 
         public static string HelpText { get; } =
             "I'm the scripted offline model. I understand these commands:\n" +

@@ -48,6 +48,14 @@ else
                 {
                     <div class="alert alert-danger py-1 px-2 mb-2" role="alert">@errorMessage</div>
                 }
+                <div class="d-flex flex-wrap align-items-center gap-1 mb-2" aria-label="Suggested prompts">
+                    <span class="small text-muted me-1">Try:</span>
+                    @foreach (var suggestion in CRUDTasksWithAgent.Services.Scripted.ScriptedIntents.Suggestions)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill"
+                                @onclick="@(() => SendSuggestionAsync(suggestion))">@suggestion</button>
+                    }
+                </div>
                 <EditForm Model="this" OnValidSubmit="@(() => SendMessageAsync())" FormName="chatForm">
                     <div class="input-group">
                         <InputText @bind-Value="userInput" @onkeypress="@(e => HandleKeyPress(e))" class="form-control" placeholder="Type your message..." />
@@ -91,6 +99,12 @@ else
 
             StateHasChanged();
         }
+    }
+
+    private async Task SendSuggestionAsync(string suggestion)
+    {
+        this.userInput = suggestion;
+        await SendMessageAsync();
     }
 
     private async Task HandleKeyPress(KeyboardEventArgs e)
