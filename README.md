@@ -2,7 +2,9 @@
 
 A hands-on training lab for learning the building blocks of AI-assisted development — **instructions, prompts, MCP, agents, skills, hooks, plugins**, and spec-driven development with OpenSpec — using a small .NET app as the playground. The labs work in any coding-agent harness; nothing here assumes one vendor.
 
-The playground app is a Blazor Server task list with a built-in chat agent. It is forked from the Azure sample [app-service-agentic-semantic-kernel-ai-foundry-agent](https://github.com/Azure-Samples/app-service-agentic-semantic-kernel-ai-foundry-agent), which accompanies the tutorial [Build an agentic web app in Azure App Service with Microsoft Agent Framework or Foundry Agent Service (.NET)](https://learn.microsoft.com/azure/app-service/tutorial-ai-agent-web-app-semantic-kernel-foundry-dotnet). Credit to the original authors.
+The playground app is a Blazor task list with a built-in chat agent. It is forked from the Azure sample [app-service-agentic-semantic-kernel-ai-foundry-agent](https://github.com/Azure-Samples/app-service-agentic-semantic-kernel-ai-foundry-agent), which accompanies the tutorial [Build an agentic web app in Azure App Service with Microsoft Agent Framework or Foundry Agent Service (.NET)](https://learn.microsoft.com/azure/app-service/tutorial-ai-agent-web-app-semantic-kernel-foundry-dotnet). Credit to the original authors.
+
+> **Hosting model: Blazor Interactive Server, not WebAssembly.** Components run on the server, and the browser gets UI updates over a SignalR connection (`blazor.web.js`). No .NET code runs in the browser. There is a single web project and no `.Client` WebAssembly project; render modes are set with `@rendermode InteractiveServer`. The components, services and API work the same way in a WebAssembly app. What differs is where the components run, and that a WebAssembly front end calls the REST API over HTTP instead of calling `TaskService` directly. See [README.WASM.md](README.WASM.md) for what moving the task list to WebAssembly would involve.
 
 ## Prerequisites
 
