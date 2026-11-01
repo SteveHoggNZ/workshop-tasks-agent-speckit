@@ -5,5 +5,7 @@ namespace CRUDTasksWithAgent.Models
         public int Id { get; set; } // Primary key for EF Core
         public string Title { get; set; } = string.Empty;
         public bool IsComplete { get; set; }
+        public TaskPriority Priority { get; set; } = TaskPriority.Normal;
+        public DateOnly? DueDate { get; set; }
     }
 }

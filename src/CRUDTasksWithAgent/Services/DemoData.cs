@@ -20,12 +20,15 @@ namespace CRUDTasksWithAgent.Services
                 return;
             }
 
+            var today = DateOnly.FromDateTime(DateTime.Now);
+
             db.Tasks.AddRange(
-                new TaskItem { Title = "Book the workshop room", IsComplete = true },
-                new TaskItem { Title = "Review the Q3 roadmap", IsComplete = false },
-                new TaskItem { Title = "Prepare demo for the team", IsComplete = false },
+                new TaskItem { Title = "Book the workshop room", IsComplete = true, DueDate = today.AddDays(-5) },
+                new TaskItem { Title = "Review the Q3 roadmap", Priority = TaskPriority.High, DueDate = today.AddDays(-2) },
+                new TaskItem { Title = "Prepare demo for the team", Priority = TaskPriority.High, DueDate = today },
                 new TaskItem { Title = "Send meeting notes to the team", IsComplete = true },
-                new TaskItem { Title = "Organize the team lunch", IsComplete = false });
+                new TaskItem { Title = "Organize the team lunch", Priority = TaskPriority.Low, DueDate = today.AddDays(7) },
+                new TaskItem { Title = "Update the onboarding doc" });
             db.SaveChanges();
         }
     }

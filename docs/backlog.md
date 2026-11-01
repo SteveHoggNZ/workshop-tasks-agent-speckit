@@ -20,6 +20,8 @@ Whenever a feature adds an app-agent tool, add a matching row to the scripted in
 
 ## B1. Due dates and priority
 
+**Status:** Delivered in `specs/001-due-date-priority`. Note: the scripted `complete`, `rename` and `delete` intents still accept single-digit ids only.
+
 **Size:** M
 
 **User story:** As a user, I want to give tasks a due date and a priority, and filter and sort by them, so that I can see what matters first.

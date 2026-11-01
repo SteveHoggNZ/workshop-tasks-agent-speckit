@@ -10,9 +10,9 @@ Configuration lives in [`Directory.Build.props`](../Directory.Build.props) (anal
 
 ## Baseline
 
-<!-- lint-baseline-total: 19 -->
+<!-- lint-baseline-total: 18 -->
 
-`dotnet build CRUDTasksWithAgent.slnx --no-incremental` → **0 errors, 19 unique warnings**.
+`dotnet build CRUDTasksWithAgent.slnx --no-incremental` → **0 errors, 18 unique warnings**.
 
 | Rule | Count | Meaning |
 | --- | ---: | --- |
@@ -22,11 +22,10 @@ Configuration lives in [`Directory.Build.props`](../Directory.Build.props) (anal
 | CA1848 | 1 | Use `LoggerMessage` delegates |
 | CA1861 | 1 | Constant array argument → `static readonly` field (tests) |
 | IDE0051 | 1 | Unused private member (`TaskCrudTool.FormatTask`) |
-| IDE0059 | 1 | Unnecessary assignment (`task` in `TaskCrudTool`) |
 | NU1510 | 1 | `System.Text.Json` package reference will not be pruned (restore warning) |
-| **Total** | **19** | |
+| **Total** | **18** | |
 
-Rules configured as `warning` with currently **zero** hits: IDE0052, CA1822.
+Rules configured as `warning` with currently **zero** hits: IDE0052, IDE0059, CA1822.
 
 ### How warnings are counted
 

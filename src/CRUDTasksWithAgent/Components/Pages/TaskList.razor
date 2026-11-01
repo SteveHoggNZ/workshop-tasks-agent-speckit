@@ -1,4 +1,5 @@
-﻿@using CRUDTasksWithAgent.Models
+@using CRUDTasksWithAgent.Models
+@using CRUDTasksWithAgent.Services
 @inject CRUDTasksWithAgent.Services.TaskService TaskService
 @page "/"
 @rendermode InteractiveServer
@@ -7,13 +8,58 @@
 
 <h1 class="mb-4">Task List</h1>
 
-<div class="mb-3 row g-2 align-items-center">
+<form class="mb-3 row g-2 align-items-end" @onsubmit="AddTask" @onsubmit:preventDefault>
     <div class="col-auto">
-        <input class="form-control" value="@newTaskTitle" @oninput="e => newTaskTitle = e.Value?.ToString() ?? string.Empty" @onkeypress="HandleKeyPress" placeholder="Enter task title" />
+        <label class="form-label" for="new-title">Title</label>
+        <input id="new-title" class="form-control" @bind="newTaskTitle" @bind:event="oninput" placeholder="Enter task title" />
     </div>
     <div class="col-auto">
-        <button class="btn btn-primary" @onclick="AddTask">Add Task</button>
+        <label class="form-label" for="new-priority">Priority</label>
+        <select id="new-priority" class="form-select" @bind="newPriority">
+            @foreach (var p in Enum.GetValues<TaskPriority>().Reverse())
+            {
+                <option value="@p">@p</option>
+            }
+        </select>
     </div>
+    <div class="col-auto">
+        <label class="form-label" for="new-due">Due date</label>
+        <input id="new-due" type="date" class="form-control" @bind="newDueDate" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Add Task</button>
+    </div>
+</form>
+
+<div class="mb-3 row g-2 align-items-end" role="group" aria-label="Filters">
+    <div class="col-auto">
+        <label class="form-label" for="filter-priority">Filter by priority</label>
+        <select id="filter-priority" class="form-select" value="@(filterPriority?.ToString() ?? "")" @onchange="OnFilterPriorityChanged">
+            <option value="">Any</option>
+            @foreach (var p in Enum.GetValues<TaskPriority>().Reverse())
+            {
+                <option value="@p">@p</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label" for="filter-due">Due on or before</label>
+        <input id="filter-due" type="date" class="form-control" value="@filterDueBy?.ToString("yyyy-MM-dd")" @onchange="OnFilterDueChanged" />
+    </div>
+    <div class="col-auto form-check ms-2">
+        <input id="filter-overdue" class="form-check-input" type="checkbox" checked="@filterOverdue" @onchange="OnFilterOverdueChanged" />
+        <label class="form-check-label" for="filter-overdue">Overdue only</label>
+    </div>
+    <div class="col-auto">
+        <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilters" disabled="@(!HasFilters)">Clear filters</button>
+    </div>
+</div>
+
+<div role="status" aria-live="polite">
+    @if (!tasks.Any())
+    {
+        <p class="text-muted">@(HasFilters ? "No tasks match the current filters." : "No tasks yet.")</p>
+    }
 </div>
 
 @if (tasks.Any())
@@ -21,14 +67,29 @@
     <ul class="list-group mb-3">
         @foreach (var task in tasks)
         {
-            <li class="list-group-item d-flex align-items-center justify-content-between">
+            var overdue = TaskService.IsOverdue(task);
+            <li class="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2" @key="task.Id">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" checked="@task.IsComplete" @onchange="(e) => OnCompleteChanged(task, e)" id="task-@task.Id" />
                     <label class="form-check-label" for="task-@task.Id" style="@(task.IsComplete ? "text-decoration: line-through; color: #888;" : "")">
                         @task.Title
                     </label>
+                    @if (overdue)
+                    {
+                        <span class="badge bg-danger ms-2">Overdue</span>
+                    }
                 </div>
-                <button class="btn btn-sm btn-danger" @onclick="() => DeleteTask(task)">Delete</button>
+                <div class="d-flex align-items-center gap-2">
+                    <select class="form-select form-select-sm" aria-label="Priority for @task.Title" value="@task.Priority" @onchange="(e) => OnPriorityChanged(task, e)">
+                        @foreach (var p in Enum.GetValues<TaskPriority>().Reverse())
+                        {
+                            <option value="@p">@p</option>
+                        }
+                    </select>
+                    <input type="date" class="form-control form-control-sm" aria-label="Due date for @task.Title" value="@task.DueDate?.ToString("yyyy-MM-dd")" @onchange="(e) => OnDueDateChanged(task, e)" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="Clear due date for @task.Title" disabled="@(task.DueDate is null)" @onclick="() => ClearDueDate(task)">Clear date</button>
+                    <button type="button" class="btn btn-sm btn-danger" aria-label="Delete @task.Title" @onclick="() => DeleteTask(task)">Delete</button>
+                </div>
             </li>
         }
     </ul>
@@ -36,33 +97,34 @@
 
 @code {
     private string newTaskTitle = string.Empty;
+    private TaskPriority newPriority = TaskPriority.Normal;
+    private DateOnly? newDueDate;
+    private TaskPriority? filterPriority;
+    private DateOnly? filterDueBy;
+    private bool filterOverdue;
     private List<TaskItem> tasks = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        tasks = await TaskService.GetAllTasksAsync();
-    }
+    private bool HasFilters => filterPriority is not null || filterDueBy is not null || filterOverdue;
+
+    protected override async Task OnInitializedAsync() => await Reload();
+
+    private async Task Reload() =>
+        tasks = await TaskService.GetTasksAsync(new TaskQuery(filterPriority, filterDueBy, filterOverdue));
 
     private async Task AddTask()
     {
-        if (!string.IsNullOrWhiteSpace(newTaskTitle))
-        {
-            await TaskService.AddTaskAsync(newTaskTitle);
-            newTaskTitle = string.Empty;
-            tasks = await TaskService.GetAllTasksAsync();
-        }
+        if (string.IsNullOrWhiteSpace(newTaskTitle)) return;
+        await TaskService.AddTaskAsync(newTaskTitle, newPriority, newDueDate);
+        newTaskTitle = string.Empty;
+        newPriority = TaskPriority.Normal;
+        newDueDate = null;
+        await Reload();
     }
 
     private async Task DeleteTask(TaskItem task)
     {
         await TaskService.DeleteTaskAsync(task);
-        tasks = await TaskService.GetAllTasksAsync();
-    }
-
-    private async Task UpdateTask(TaskItem task)
-    {
-        await TaskService.UpdateTaskAsync(task);
-        tasks = await TaskService.GetAllTasksAsync();
+        await Reload();
     }
 
     private async Task OnCompleteChanged(TaskItem task, ChangeEventArgs e)
@@ -70,15 +132,55 @@
         if (e.Value is bool isComplete)
         {
             await TaskService.SetTaskCompletionAsync(task, isComplete);
-            tasks = await TaskService.GetAllTasksAsync();
+            await Reload();
         }
     }
 
-    private async Task HandleKeyPress(KeyboardEventArgs e)
+    private async Task OnPriorityChanged(TaskItem task, ChangeEventArgs e)
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newTaskTitle))
-        {
-            await AddTask();
-        }
+        if (!TaskInputParser.TryParsePriority(e.Value?.ToString(), out var priority)) return;
+        task.Priority = priority;
+        await TaskService.UpdateTaskAsync(task);
+        await Reload();
+    }
+
+    private async Task OnDueDateChanged(TaskItem task, ChangeEventArgs e)
+    {
+        task.DueDate = TaskInputParser.TryParseDueDate(e.Value?.ToString(), out var date) ? date : null;
+        await TaskService.UpdateTaskAsync(task);
+        await Reload();
+    }
+
+    private async Task ClearDueDate(TaskItem task)
+    {
+        task.DueDate = null;
+        await TaskService.UpdateTaskAsync(task);
+        await Reload();
+    }
+
+    private async Task OnFilterPriorityChanged(ChangeEventArgs e)
+    {
+        filterPriority = TaskInputParser.TryParsePriority(e.Value?.ToString(), out var priority) ? priority : null;
+        await Reload();
+    }
+
+    private async Task OnFilterDueChanged(ChangeEventArgs e)
+    {
+        filterDueBy = TaskInputParser.TryParseDueDate(e.Value?.ToString(), out var date) ? date : null;
+        await Reload();
+    }
+
+    private async Task OnFilterOverdueChanged(ChangeEventArgs e)
+    {
+        filterOverdue = e.Value is true;
+        await Reload();
+    }
+
+    private async Task ClearFilters()
+    {
+        filterPriority = null;
+        filterDueBy = null;
+        filterOverdue = false;
+        await Reload();
     }
 }
