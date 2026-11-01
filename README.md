@@ -1,6 +1,6 @@
 # AI Development Primitives Lab
 
-A hands-on training lab for learning the building blocks of AI-assisted development — **instructions, prompts, MCP, agents, skills, hooks, plugins**, and spec-driven development with OpenSpec — using a small .NET app as the playground. The labs work in any coding-agent harness; nothing here assumes one vendor.
+A hands-on training lab for learning the building blocks of AI-assisted development — **instructions, prompts, MCP, agents, skills, hooks, plugins**, and spec-driven development with GitHub Spec Kit — using a small .NET app as the playground. The labs work in any coding-agent harness; nothing here assumes one vendor.
 
 The playground app is a Blazor task list with a built-in chat agent. It is forked from the Azure sample [app-service-agentic-semantic-kernel-ai-foundry-agent](https://github.com/Azure-Samples/app-service-agentic-semantic-kernel-ai-foundry-agent), which accompanies the tutorial [Build an agentic web app in Azure App Service with Microsoft Agent Framework or Foundry Agent Service (.NET)](https://learn.microsoft.com/azure/app-service/tutorial-ai-agent-web-app-semantic-kernel-foundry-dotnet). Credit to the original authors.
 
