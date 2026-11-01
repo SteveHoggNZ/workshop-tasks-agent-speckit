@@ -119,7 +119,8 @@ A complete worked example for this repo. Each block is a full prompt: copy it, p
 ### Before you start
 
 ```bash
-git switch -c run/what-first      # a throwaway branch; constitution and assess commit before the feature branch exists
+git switch -c run/walkthrough-$(date +%Y%m%d-%H%M%S)   # a fresh branch per attempt; steps 1–6 commit before Spec Kit creates its feature branch
+# PowerShell: git switch -c "run/walkthrough-$(Get-Date -Format yyyyMMdd-HHmmss)"
 copilot                           # or: codex / claude
 ```
 
