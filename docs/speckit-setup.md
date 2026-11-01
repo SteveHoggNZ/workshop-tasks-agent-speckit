@@ -37,6 +37,7 @@ specify integration use codex                            # make Codex the defaul
 specify extension add assess --force                     # …so the extension skills register for Codex
 specify extension add git --force
 specify integration use copilot                          # Copilot back as the default
+chmod +x .specify/scripts/bash/*.sh                      # installing a 2nd integration can drop the execute bit
 uv run --with pyyaml python scripts/configure_speckit_git.py .   # re-apply 5–9; re-adding git resets its hooks
 ```
 
