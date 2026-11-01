@@ -66,6 +66,8 @@ Labs give a per-harness tab for each tier-1 harness wherever the file names or m
 
 ## Labs
 
+**Spec-driven development:** follow [INSTRUCTIONS.md](INSTRUCTIONS.md) to install GitHub Spec Kit and take an idea from assessment through spec, plan and tasks to implementation.
+
 Lab guides live in the `labs/` folder, which is being added. Start there once it lands. Each lab can be validated with the harness-free checker `node scripts/check-lab.mjs NN` (where `NN` is the lab number), also being added.
 
 For background reading:
