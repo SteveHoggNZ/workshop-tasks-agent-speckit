@@ -80,6 +80,8 @@ Commit at this point (`git add -A && git commit -m "Install Spec Kit"`) so the s
 
 Run the steps **in your agent's chat, one at a time**, and review the file each one writes before moving on. Each step writes a Markdown file that the next step reads, so you can start a fresh session between steps without losing context. Each step also **commits itself**; glance at `git log --oneline` to confirm, and run `/speckit-git-commit` if one is missing.
 
+> **Want the exact prompts?** [Walkthrough: copy and paste every step](#walkthrough-copy-and-paste-every-step) has a complete, ready-to-paste prompt for each step below, worked through on this repo.
+
 | # | Step (Copilot / Claude) | What it does | What it writes | Why it matters |
 | ---: | --- | --- | --- | --- |
 | 1 | `/speckit-constitution <principles>` | Records the project's non-negotiable rules, e.g. testing, layering, dependencies, lint. **Run once per project.** | `.specify/memory/constitution.md` | Every later step is checked against these rules, so standards are enforced each time rather than remembered. |
@@ -107,14 +109,160 @@ dotnet run --project src/CRUDTasksWithAgent
 
 **Optional:** to turn `tasks.md` into GitHub Issues, run `specify extension add github`, then `/speckit-github-taskstoissues`. This needs a GitHub remote and the GitHub MCP server.
 
-### An idea to try
+## Walkthrough: copy and paste every step
 
-```text
-/speckit-assess-intake slug=what-first Users say they can't tell what to work on first:
-the task list is one flat list in creation order.
+A complete worked example for this repo. Each block is a full prompt: copy it, paste it into your agent's chat, wait for the step to finish, review what it wrote, then move on. The example idea is *"users can't tell what to work on first"*, which leads to backlog item **B1 "Due dates and priority"** in [docs/backlog.md](docs/backlog.md).
+
+- **Codex users:** change the leading `/` to `$` (e.g. `$speckit-constitution`). Everything else is the same.
+- **Your own repo:** the steps are the same. Rewrite the constitution for your codebase and replace the idea with your own.
+
+### Before you start
+
+```bash
+git switch -c run/what-first      # a throwaway branch; constitution and assess commit before the feature branch exists
+copilot                           # or: codex / claude
 ```
 
-The research step should find backlog item **B1 "Due dates and priority"** in [docs/backlog.md](docs/backlog.md). Any other backlog item, or a problem from your own work, works just as well.
+After each step, run `git log --oneline -3` in another terminal. You should see a new `[Spec Kit] …` commit. If one is missing, run `/speckit-git-commit`.
+
+### Step 1: Constitution (once per project)
+
+```text
+/speckit-constitution Create the constitution for this .NET 10 Blazor Interactive Server task app. Principles:
+1. Every behaviour change ships with xUnit tests in tests/CRUDTasksWithAgent.Tests, at the service, API and app-agent tool levels as relevant.
+2. Keep the layering: Model -> TaskService -> minimal API endpoints in Program.cs -> Blazor page. App-agent tools in Tools/TaskCrudTool.cs call TaskService; they never touch the DbContext directly.
+3. Any new or changed app-agent tool needs a matching scripted intent in Services/Scripted/ScriptedIntents.cs, with a working Example, so it works offline and appears as a suggested prompt in the chat.
+4. Do not add build warnings beyond the baseline in docs/lint-baseline.md; check with node scripts/lint-count.mjs --check.
+5. No new NuGet packages without a written justification in the plan.
+6. The app must stay runnable offline with no keys (the scripted model is the default).
+7. The UI stays Blazor Interactive Server; moving to WebAssembly is out of scope unless a spec says otherwise.
+```
+
+**Review:** `.specify/memory/constitution.md`. Every principle should be checkable, not vague.
+
+### Step 2: Assess, intake
+
+```text
+/speckit-assess-intake slug=what-first Users say they can't tell what to work on first. The task list is one flat list in creation order, with no way to mark urgency or deadlines. Evidence: three support requests this month asking for "urgent" or "due date" markers, and backlog item B1 "Due dates and priority" in docs/backlog.md. Users are individuals managing their own tasks in this app, through the task list page and the chat agent.
+```
+
+**Review:** `.specify/assessments/what-first/intake.md`.
+
+### Step 3: Assess, research
+
+```text
+/speckit-assess-research slug=what-first Look for prior art and constraints in this repo: docs/backlog.md (especially B1), the TaskItem model, TaskService, the /api/tasks endpoints in Program.cs, Components/Pages/TaskList.razor, and the app-agent tools in Tools/TaskCrudTool.cs. Note what already exists, what is missing, and anything that would make this harder, such as the in-memory database or the full-object PUT.
+```
+
+**Review:** `research.md`. It should cite B1 and the current data model.
+
+### Step 4: Assess, define
+
+```text
+/speckit-assess-define slug=what-first Keep the problem focused on individuals deciding what to do next. A good success metric: with 20 or more open tasks, a user can identify their most urgent incomplete task in under 5 seconds, from both the task list and the chat agent.
+```
+
+**Review:** `problem.md`: problem, users, goals, non-goals, success metrics.
+
+### Step 5: Assess, shape
+
+```text
+/speckit-assess-shape slug=what-first Compare at least two options, e.g. priority only, versus due date plus priority with sort and filter. Keep the appetite small: something an agent can implement and test in about a day. Shared or team tasks, notifications and recurring tasks are out of scope.
+```
+
+**Review:** `concept.md`: options, trade-offs, the recommended option and the appetite.
+
+### Step 6: Assess, decide
+
+```text
+/speckit-assess-decide slug=what-first
+```
+
+**Review:** `decision.md` gives **go**, **needs-clarification** or **kill**. A "go" commits the assessment (`[Spec Kit] Add idea assessment`) when you run the next step. For **needs-clarification**, edit the file it names (e.g. add evidence to `research.md`) and run this step again.
+
+### Step 7: Specify
+
+```text
+/speckit-specify Use the handoff summary in .specify/assessments/what-first/decision.md to specify the approved concept.
+```
+
+This creates and switches to a feature branch such as `001-what-first`.
+
+**Review:** `specs/001-*/spec.md`: user stories, acceptance scenarios, and `[NEEDS CLARIFICATION]` markers. No implementation detail.
+
+### Step 8: Clarify
+
+```text
+/speckit-clarify Where these decisions answer a question, apply them; ask me about anything else:
+- Priority levels are Low, Normal and High; new tasks default to Normal.
+- Due dates are dates only (no time); "today" uses the server's local date.
+- A task is overdue when its due date is before today and it is not complete.
+- Default sort: priority (High first), then due date (earliest first, no date last), then title.
+- Filters for priority, due before a date, and overdue can be combined.
+- The chat agent can set and change priority and due date, through the existing tools plus scripted intents.
+- An invalid priority or date in an API request returns 400.
+```
+
+**Review:** `spec.md` has a "Clarifications" section, and the `[NEEDS CLARIFICATION]` markers are gone. Answer any extra questions it asks.
+
+### Step 9: Plan
+
+```text
+/speckit-plan Use the existing stack only: EF Core in-memory via TasksDbContext, minimal API endpoints in Program.cs, Blazor Interactive Server in Components/Pages/TaskList.razor, app-agent tools in Tools/TaskCrudTool.cs with matching scripted intents, and xUnit tests using Helpers/ApiFactory.cs and Helpers/TestDb.cs. No new packages. Keep the PUT endpoint backwards compatible, and say how the plan handles a PUT that omits fields.
+```
+
+**Review and approve before any code is written:** `plan.md`, `research.md`, `data-model.md`, `contracts/` and `quickstart.md`. Check the constitution check passes.
+
+### Step 10: Checklist (optional)
+
+```text
+/speckit-checklist Create a checklist for API and UX quality: validation and 400 responses, sort and filter behaviour, keyboard accessibility of the new controls, and offline behaviour of the chat agent's scripted intents.
+```
+
+**Review:** `checklists/`. Tick or fix items before tasks.
+
+### Step 11: Tasks
+
+```text
+/speckit-tasks Write tests first for each layer (service, API, app-agent tool), then the implementation, then the UI. Keep each task small enough to review on its own, and mark tasks that can run in parallel.
+```
+
+**Review:** `tasks.md`. Tasks should be small, ordered, and each traceable to a requirement.
+
+### Step 12: Analyze (optional)
+
+```text
+/speckit-analyze
+```
+
+**Review:** the report in chat. Fix any contradictions between the spec, plan and tasks before implementing.
+
+### Step 13: Implement
+
+```text
+/speckit-implement Work through tasks.md in order. After each phase, run dotnet test and fix failures before continuing. At the end, run node scripts/lint-count.mjs --check and fix any new warnings.
+```
+
+**Review:** the diff, and `tasks.md` with tasks ticked off.
+
+### Step 14: Converge
+
+```text
+/speckit-converge
+```
+
+If it adds tasks, run `/speckit-implement` again, then `/speckit-converge`, until it reports **Converged**.
+
+### Check the result yourself
+
+```bash
+dotnet test
+node scripts/lint-count.mjs --check
+dotnet run --project src/CRUDTasksWithAgent --urls http://localhost:5280
+curl "http://localhost:5280/api/tasks"      # tasks now include priority and due date
+```
+
+Open http://localhost:5280/ to try the new controls, and http://localhost:5280/agentfx to see the chat's new suggested prompts. Then compare the result with the success metric from step 4.
 
 ## Using another agent
 
