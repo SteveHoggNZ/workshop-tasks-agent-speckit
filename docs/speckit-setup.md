@@ -9,7 +9,7 @@ The configuration lives on branch `demo/01-init`. You can reproduce it on any re
 | Component | Version | Installed with |
 | --- | --- | --- |
 | Spec Kit CLI (`specify-cli`) | 1.2.5 | `uv tool install specify-cli`, or `uvx --from specify-cli` |
-| Agent integration | `copilot`, with `sh` scripts | `specify init --here --force --integration copilot --script sh` |
+| Agent integrations | `copilot` (the default) and `codex`, with `sh` scripts | `specify init --here --force --integration copilot --script sh`, then `specify integration install codex --script sh --force` |
 | `assess` extension | 1.0.1 (spec-kit-core) | `specify extension add assess` |
 | `git` extension | 1.0.1 (spec-kit-core) | `specify extension add git` |
 
@@ -26,6 +26,21 @@ The configuration lives on branch `demo/01-init`. You can reproduce it on any re
 | 7 | Added a commit **before** specify | `.specify/extensions.yml` (`before_specify`, first in the list) | The assess steps are an extension and have no commit hooks of their own; this captures their output before the feature branch is created |
 | 8 | Added a commit **after** converge | `.specify/extensions.yml` (`after_converge`) | The git extension doesn't register this event; without it, converge's changes would stay uncommitted |
 | 9 | Disabled the other `before_*` commit hooks | `.specify/extensions.yml` (`enabled: false`) | Keeps the run quiet; the `after_*` commits already capture every step |
+| 10 | **Added Codex alongside Copilot** | `.agents/skills/speckit-*` (Codex) next to `.github/skills/speckit-*` (Copilot); `.specify/integration.json` | The team uses Codex, the demo uses Copilot CLI. Each agent reads skills from its own folder, and the copies differ only in how commands are written (`$speckit-…` vs `/speckit-…`) |
+| 11 | Registered the assess and git skills for Codex too | `.agents/skills/speckit-assess-*`, `.agents/skills/speckit-git-*` | Extensions only register skills for the *default* integration, so Codex was made the default briefly while re-adding them (see below) |
+
+### How the two agents were set up
+
+```bash
+specify integration install codex --script sh --force   # --force: Copilot isn't marked multi-install safe
+specify integration use codex                            # make Codex the default for a moment…
+specify extension add assess --force                     # …so the extension skills register for Codex
+specify extension add git --force
+specify integration use copilot                          # Copilot back as the default
+uv run --with pyyaml python scripts/configure_speckit_git.py .   # re-apply 5–9; re-adding git resets its hooks
+```
+
+The `codex` CLI doesn't need to be installed for this. Copilot CLI was checked afterwards: it sees each of the 20 skills once, with no duplicates.
 
 Customisations 5–9 were applied with [`scripts/configure_speckit_git.py`](../scripts/configure_speckit_git.py). The resulting YAML is committed, so you can read exactly what changed.
 

@@ -128,3 +128,5 @@ The steps, files and order are the same in every agent. Only the setup flag and 
 | Switch an initialised repo | `specify integration switch copilot` | `specify integration switch codex` | `specify integration switch claude` |
 
 Run `specify integration list` to see every supported agent.
+
+**On branch `demo/01-init`, Copilot and Codex are both set up**, so Codex users can type `$speckit-…` straight away. To add a second agent to your own repo, see [docs/speckit-setup.md](docs/speckit-setup.md#how-the-two-agents-were-set-up).
