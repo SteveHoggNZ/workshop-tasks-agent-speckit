@@ -128,6 +128,9 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 
 ### Step 1: Constitution (once per project)
 
+**What it does:** records the project's non-negotiable rules (tests, layering, dependencies, lint, offline). Every later step is checked against them.  
+**Why:** standards get enforced on every step instead of depending on someone remembering them.
+
 ```text
 /speckit-constitution Create the constitution for this .NET 10 Blazor Interactive Server task app. Principles:
 1. Every behaviour change ships with xUnit tests in tests/CRUDTasksWithAgent.Tests, at the service, API and app-agent tool levels as relevant.
@@ -143,13 +146,21 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 
 ### Step 2: Assess, intake
 
+**What it does:** captures the raw idea (the problem as it arrived, plus any evidence) as a normalised intake note. No solution yet.  
+**Why:** starts from the real problem before anyone commits to an answer.
+
 ```text
 /speckit-assess-intake slug=what-first Users say they can't tell what to work on first. The task list is one flat list in creation order, with no way to mark urgency or deadlines. Evidence: three support requests this month asking for "urgent" or "due date" markers, and backlog item B1 "Due dates and priority" in docs/backlog.md. Users are individuals managing their own tasks in this app, through the task list page and the chat agent.
 ```
 
 **Review:** `.specify/assessments/what-first/intake.md`.
 
+> The assess steps (2–6) don't commit on their own, so `.specify/assessments/what-first/` shows as untracked in `git status`. That's expected: it's committed as `[Spec Kit] Add idea assessment` when you run Specify (step 7).
+
 ### Step 3: Assess, research
+
+**What it does:** gathers evidence for and against the idea from the repo and what you've given it: prior art, the current code, constraints.  
+**Why:** tests the idea against evidence rather than enthusiasm, and finds work that already exists (here, backlog item B1).
 
 ```text
 /speckit-assess-research slug=what-first Look for prior art and constraints in this repo: docs/backlog.md (especially B1), the TaskItem model, TaskService, the /api/tasks endpoints in Program.cs, Components/Pages/TaskList.razor, and the app-agent tools in Tools/TaskCrudTool.cs. Note what already exists, what is missing, and anything that would make this harder, such as the in-memory database or the full-object PUT.
@@ -159,6 +170,9 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 
 ### Step 4: Assess, define
 
+**What it does:** defines the problem: who it affects, what hurts, goals, non-goals and how success will be measured.  
+**Why:** you can't judge a solution without an agreed problem and a way to tell it worked.
+
 ```text
 /speckit-assess-define slug=what-first Keep the problem focused on individuals deciding what to do next. A good success metric: with 20 or more open tasks, a user can identify their most urgent incomplete task in under 5 seconds, from both the task list and the chat agent.
 ```
@@ -166,6 +180,9 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 **Review:** `problem.md`: problem, users, goals, non-goals, success metrics.
 
 ### Step 5: Assess, shape
+
+**What it does:** sketches solution options with their trade-offs, recommends one, and sets an appetite (how much it's worth spending). No implementation design.  
+**Why:** decides the scope and the budget before anyone designs or builds.
 
 ```text
 /speckit-assess-shape slug=what-first Compare at least two options, e.g. priority only, versus due date plus priority with sort and filter. Keep the appetite small: something an agent can implement and test in about a day. Shared or team tasks, notifications and recurring tasks are out of scope.
@@ -175,6 +192,9 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 
 ### Step 6: Assess, decide
 
+**What it does:** gives a verdict (**go**, **needs-clarification** or **kill**). For a go, it writes a handoff summary for specify.  
+**Why:** only ideas worth building reach delivery. A documented kill is a good outcome.
+
 ```text
 /speckit-assess-decide slug=what-first
 ```
@@ -182,6 +202,9 @@ After each step, run `git log --oneline -3` in another terminal. You should see 
 **Review:** `decision.md` gives **go**, **needs-clarification** or **kill**. A "go" commits the assessment (`[Spec Kit] Add idea assessment`) when you run the next step. For **needs-clarification**, edit the file it names (e.g. add evidence to `research.md`) and run this step again.
 
 ### Step 7: Specify
+
+**What it does:** turns the approved concept into a feature spec: user stories, acceptance scenarios and requirements, with **no implementation detail**. Unknowns are marked `[NEEDS CLARIFICATION]`. It also creates a feature branch.  
+**Why:** agrees *what* and *why* before *how*. The spec is the contract the finished code is checked against.
 
 ```text
 /speckit-specify Use the handoff summary in .specify/assessments/what-first/decision.md to specify the approved concept.
@@ -192,6 +215,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 **Review:** `specs/001-*/spec.md`: user stories, acceptance scenarios, and `[NEEDS CLARIFICATION]` markers. No implementation detail.
 
 ### Step 8: Clarify
+
+**What it does:** finds gaps and ambiguities in the spec, asks you up to five targeted questions, and writes the answers back into the spec.  
+**Why:** a human settles the ambiguities now, instead of the agent guessing halfway through coding.
 
 ```text
 /speckit-clarify Where these decisions answer a question, apply them; ask me about anything else:
@@ -208,6 +234,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 
 ### Step 9: Plan
 
+**What it does:** designs the change against the existing code and the constitution: technical research, data model, API contracts and a quickstart.  
+**Why:** **the approval gate.** You review and approve *how* before any code is written.
+
 ```text
 /speckit-plan Use the existing stack only: EF Core in-memory via TasksDbContext, minimal API endpoints in Program.cs, Blazor Interactive Server in Components/Pages/TaskList.razor, app-agent tools in Tools/TaskCrudTool.cs with matching scripted intents, and xUnit tests using Helpers/ApiFactory.cs and Helpers/TestDb.cs. No new packages. Keep the PUT endpoint backwards compatible, and say how the plan handles a PUT that omits fields.
 ```
@@ -215,6 +244,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 **Review and approve before any code is written:** `plan.md`, `research.md`, `data-model.md`, `contracts/` and `quickstart.md`. Check the constitution check passes.
 
 ### Step 10: Checklist (optional)
+
+**What it does:** generates a quality checklist for the areas you name (e.g. API, UX, security), to test the spec and plan against.  
+**Why:** turns "is this good enough?" into explicit items you can check.
 
 ```text
 /speckit-checklist Create a checklist for API and UX quality: validation and 400 responses, sort and filter behaviour, keyboard accessibility of the new controls, and offline behaviour of the chat agent's scripted intents.
@@ -224,6 +256,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 
 ### Step 11: Tasks
 
+**What it does:** breaks the plan into small, ordered tasks, with tests first and parallel tasks marked.  
+**Why:** small tasks keep each change reviewable and give the agent a script to follow.
+
 ```text
 /speckit-tasks Write tests first for each layer (service, API, app-agent tool), then the implementation, then the UI. Keep each task small enough to review on its own, and mark tasks that can run in parallel.
 ```
@@ -231,6 +266,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 **Review:** `tasks.md`. Tasks should be small, ordered, and each traceable to a requirement.
 
 ### Step 12: Analyze (optional)
+
+**What it does:** a read-only consistency check across the spec, plan and tasks: gaps, contradictions and breaches of the constitution. It changes no files.  
+**Why:** catches drift between the documents before it becomes code.
 
 ```text
 /speckit-analyze
@@ -240,6 +278,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 
 ### Step 13: Implement
 
+**What it does:** works through `tasks.md`, writing code and tests and ticking tasks off as it goes.  
+**Why:** the agent builds against an approved plan instead of improvising.
+
 ```text
 /speckit-implement Work through tasks.md in order. After each phase, run dotnet test and fix failures before continuing. At the end, run node scripts/lint-count.mjs --check and fix any new warnings.
 ```
@@ -247,6 +288,9 @@ This creates and switches to a feature branch such as `001-what-first`.
 **Review:** the diff, and `tasks.md` with tasks ticked off.
 
 ### Step 14: Converge
+
+**What it does:** compares the code with the spec, plan and tasks, and adds any unbuilt work to `tasks.md` as new tasks.  
+**Why:** closes the loop. Repeat implement and converge until it reports **Converged**.
 
 ```text
 /speckit-converge
