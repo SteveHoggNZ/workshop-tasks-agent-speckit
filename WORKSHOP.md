@@ -52,7 +52,7 @@ The reset command only removes uncommitted changes, never the examples you commi
 4. Models vary. If it scores 3 or more, run it once more in a new chat and keep the lower score.
 5. Reset.
 
-**Copy** `cp -R examples/step01-agents-md/. ./` → `AGENTS.md`, `CLAUDE.md` (matrix row 1).
+**Copy** `cp -R examples/step01-agents-md/. ./ && git add -A && git commit -m "lab: step01 copy example"` → `AGENTS.md`, `CLAUDE.md` (matrix row 1).
 
 **Read**
 
@@ -65,6 +65,8 @@ The reset command only removes uncommitted changes, never the examples you commi
 
 **Try** Delete the `TimeProvider` rule, reset, and run again. Does `DateTime.Now` come back?
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step01 after"` (or reset to discard the After run). `git status` should be clean before Step 2.
+
 ### Step 2: File-scoped instructions (`*.instructions.md`)
 **Before:** the review misses what you saw on `/board` and `/dashboard`; no Razor rules file is loaded (Copilot: References list).\
 **After:** your Razor rules file is loaded (Copilot: References lists `blazor.instructions.md`), and the review and new component follow each of your rules.
@@ -75,7 +77,7 @@ The reset command only removes uncommitted changes, never the examples you commi
 2. Open http://localhost:5280/dashboard. Move between Dashboard and other pages ten times. Nothing visible happens; Step 9 measures it.
 3. Ask the agent: `Review Board.razor and Dashboard.razor for Blazor problems.` Note what it misses.
 
-**Copy** `cp -R examples/step02-scoped-rules/. ./` → `docs/rules/{blazor,tests}.md`, `.github/instructions/{blazor,tests}.instructions.md`, `.claude/rules/` (symlinks), `src/CRUDTasksWithAgent/Components/AGENTS.md`, `tests/AGENTS.md` (matrix row 3).
+**Copy** `cp -R examples/step02-scoped-rules/. ./ && git add -A && git commit -m "lab: step02 copy example"` → `docs/rules/{blazor,tests}.md`, `.github/instructions/{blazor,tests}.instructions.md`, `.claude/rules/` (symlinks), `src/CRUDTasksWithAgent/Components/AGENTS.md`, `tests/AGENTS.md` (matrix row 3).
 
 **Read**
 
@@ -93,6 +95,8 @@ Do not fix the bugs yet. Steps 7, 8 and 9 cover them.
 
 **Try** Narrow `applyTo`/`paths:` to `**/Board.razor` and check whether the rules still load for `Dashboard.razor`.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step02 after"` (or reset to discard the After run). `git status` should be clean before Step 3.
+
 ### Step 3: Skill vs prompt file (`add-agent-tool`)
 **Before:** `clear completed` in `/agentfx` is not understood, or no new test exists; note how many of the files you found were changed.\
 **After:** `clear completed` works, `dotnet test` shows one or more new passing tests, and every file in the skill was changed.
@@ -104,7 +108,7 @@ Do not fix the bugs yet. Steps 7, 8 and 9 cover them.
 3. Check: Does `clear completed` work in `/agentfx`? Is there a test? Run `dotnet test`. Count the files changed.
 4. Reset.
 
-**Copy** `cp -R examples/step03-skill-and-prompt/. ./` → `.agents/skills/add-agent-tool/SKILL.md`, `.claude/skills/add-agent-tool` (symlink), `.github/prompts/new-agent-tool.prompt.md` (matrix rows 4-5).
+**Copy** `cp -R examples/step03-skill-and-prompt/. ./ && git add -A && git commit -m "lab: step03 copy example"` → `.agents/skills/add-agent-tool/SKILL.md`, `.claude/skills/add-agent-tool` (symlink), `.github/prompts/new-agent-tool.prompt.md` (matrix rows 4-5).
 
 **Read**
 
@@ -121,13 +125,15 @@ Do not fix the bugs yet. Steps 7, 8 and 9 cover them.
 
 **Try** Make the skill `description` vague ("Helps with tools") and see whether it still loads for the plain prompt.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step03 after"` (or reset to discard the After run). `git status` should be clean before Step 4.
+
 ### Step 4: Read-only reviewer agent (`docs-reviewer`)
 **Before:** your own list of drift items between `docs/architecture.md` and the code (write down the count).\
 **After:** the agent's list covers at least your items, it cannot edit the doc, and a re-review after the fix reports no drift.
 
 **Before** Read `docs/architecture.md`, compare it with the folders and pages in `src/CRUDTasksWithAgent`, and list anything missing or wrong.
 
-**Copy** `cp -R examples/step04-docs-reviewer/. ./` → `.agents/agents/docs-reviewer.md`, `.github/agents/docs-reviewer.agent.md`, `.claude/agents/docs-reviewer.md`, `.codex/agents/docs-reviewer.toml` (matrix row 6).
+**Copy** `cp -R examples/step04-docs-reviewer/. ./ && git add -A && git commit -m "lab: step04 copy example"` → `.agents/agents/docs-reviewer.md`, `.github/agents/docs-reviewer.agent.md`, `.claude/agents/docs-reviewer.md`, `.codex/agents/docs-reviewer.toml` (matrix row 6).
 
 **Read**
 
@@ -144,13 +150,15 @@ Do not fix the bugs yet. Steps 7, 8 and 9 cover them.
 
 **Try** Add `edit` to the Copilot `tools` list (or `Edit` for Claude) and ask it to fix the doc again.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step04 after"` (or reset to discard the After run). `git status` should be clean before Step 5.
+
 ### Step 5: Package it (plugin)
 **Before:** another workspace's agent picker shows none of your agents or skills.\
 **After:** after installing `tasks-lab`, your agents appear in the picker and your skills load there.
 
 **Before** Open another workspace. Your agents and skills are not there; the primitives are spread across `AGENTS.md` and several tool folders.
 
-**Copy** `cp -R examples/step05-plugin/. ./` → `plugins/tasks-lab/` (`plugin.json`, `.claude-plugin/plugin.json`, symlinks to agents and skills), `.github/plugin/marketplace.json`, `.claude-plugin/marketplace.json` (matrix row 11).
+**Copy** `cp -R examples/step05-plugin/. ./ && git add -A && git commit -m "lab: step05 copy example"` → `plugins/tasks-lab/` (`plugin.json`, `.claude-plugin/plugin.json`, symlinks to agents and skills), `.github/plugin/marketplace.json`, `.claude-plugin/marketplace.json` (matrix row 11).
 
 **Read**
 
@@ -165,6 +173,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 ---
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step05 after"` (or reset to discard the After run). `git status` should be clean before Step 6.
+
 ## Session 2: Advanced workflows
 
 ### Step 6: TDD agents with handoffs (`tdd-red`, `tdd-green`, `tdd-refactor`)
@@ -177,7 +187,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 2. A user also reports that "Week starting" shows the wrong date on some days of the week.
 3. Look in `tests/`. Is `TaskStatsCalculator` tested?
 
-**Copy** `cp -R examples/step06-tdd-agents/. ./` → `tdd-red`, `tdd-green`, `tdd-refactor` in `.agents/agents/`, `.github/agents/`, `.claude/agents/`, `.codex/agents/` (matrix rows 6-7).
+**Copy** `cp -R examples/step06-tdd-agents/. ./ && git add -A && git commit -m "lab: step06 copy example"` → `tdd-red`, `tdd-green`, `tdd-refactor` in `.agents/agents/`, `.github/agents/`, `.claude/agents/`, `.codex/agents/` (matrix rows 6-7).
 
 **Read**
 
@@ -194,6 +204,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 **Try** Remove "Stop after one failing test" from `tdd-red` and see how many tests it writes.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step06 after"` (or reset to discard the After run). `git status` should be clean before Step 7.
+
 ### Step 7: Debugger agent with Playwright MCP
 **Before:** after ticking the first task, a different row's checkbox is ticked; the struck-through rows and the reload disagree.\
 **After:** checkboxes match the struck-through rows before and after reload, and the agent showed the bug in the browser first.
@@ -204,7 +216,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 2. Reload the page. Compare.
 3. Ask the default agent the prompt from After. Note whether it can see the browser.
 
-**Copy** `cp -R examples/step07-debugger-mcp/. ./` → `.vscode/mcp.json`, `.mcp.json`, `.codex/config.toml`, `debugger` in `.agents/agents/`, `.github/agents/`, `.claude/agents/`, `.codex/agents/` (matrix rows 6, 10). Start or approve the `playwright` server in your tool.
+**Copy** `cp -R examples/step07-debugger-mcp/. ./ && git add -A && git commit -m "lab: step07 copy example"` → `.vscode/mcp.json`, `.mcp.json`, `.codex/config.toml`, `debugger` in `.agents/agents/`, `.github/agents/`, `.claude/agents/`, `.codex/agents/` (matrix rows 6, 10). Start or approve the `playwright` server in your tool.
 
 **Read**
 
@@ -219,6 +231,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 **Try** Rename the server key in your tool's MCP config only and see what the agent reports.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step07 after"` (or reset to discard the After run). `git status` should be clean before Step 8.
+
 ### Step 8: Diagnostics skill: slow page
 **Before:** visible lag on each keystroke and `[` breaks the page; record CPU %, the settle time and the top frame from the trace.\
 **After:** no visible lag (settles in about 1 s), `[` is a normal search, CPU % is lower and the old top frame is gone from the top 15.
@@ -229,7 +243,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 2. Type `sample task 12` into Search, one key at a time. Note how long the count takes to settle.
 3. Type `[`, then a few more keys. The count stops updating; there is no error message.
 
-**Copy** `cp -R examples/step08-diagnostics-skill/. ./` → `.agents/skills/dotnet-diagnostics/` (`SKILL.md`, `scripts/`), `.claude/skills/dotnet-diagnostics` (symlink) (matrix row 4).
+**Copy** `cp -R examples/step08-diagnostics-skill/. ./ && git add -A && git commit -m "lab: step08 copy example"` → `.agents/skills/dotnet-diagnostics/` (`SKILL.md`, `scripts/`), `.claude/skills/dotnet-diagnostics` (symlink) (matrix row 4).
 
 **Read**
 
@@ -245,6 +259,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 3. Measure again with the same steps. Compare the numbers.
 
 **Try** Run `top-frames.py --inclusive` on the same trace and compare the ranking.
+
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step08 after"` (or reset to discard the After run). `git status` should be clean before Step 9.
 
 ### Step 9: Diagnostics skill: memory growth
 **Before:** GC heap size grows by tens of MB over 20 Dashboard visits and does not drop; record the MB.\
@@ -263,6 +279,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 1. Ask the agent to use the skill: take a heap dump, repeat Before step 2, take another, and compare.
 2. Ask it to fix the cause it finds. Repeat Before. The heap should level off.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step09 after"` (or reset to discard the After run). `git status` should be clean before Step 10.
+
 ### Step 10: Hooks (guard rails)
 **Before:** `git status` shows `tdd-red` edited `src/` and the agent edited `infra/main.bicep`.\
 **After:** both edits are blocked with a reason, `git status` shows no `src/` or `infra/` changes, and a syntax error is reported.
@@ -273,7 +291,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 2. In the default agent, ask: `Change the App Service SKU in infra/main.bicep to P1v3.` Note whether it edits the file.
 3. Reset.
 
-**Copy** `cp -R examples/step10-hooks/. ./` → `scripts/hooks/{lib,guard-edits,build-after-edit}.sh`, `.github/hooks/lab-guards.json` + `.github/hooks/scripts` (symlink), `.claude/settings.json`, `.codex/hooks.json`, updated `.agents/agents/tdd-{red,green}.md` (matrix rows 8-9). Enable hooks first (Setup 8).
+**Copy** `cp -R examples/step10-hooks/. ./ && git add -A && git commit -m "lab: step10 copy example"` → `scripts/hooks/{lib,guard-edits,build-after-edit}.sh`, `.github/hooks/lab-guards.json` + `.github/hooks/scripts` (symlink), `.claude/settings.json`, `.codex/hooks.json`, updated `.agents/agents/tdd-{red,green}.md` (matrix rows 8-9). Enable hooks first (Setup 8).
 
 **Read**
 
@@ -290,6 +308,8 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 **Try** Add `docs/` to the blocked paths in `guard-edits.sh` and ask the agent to edit a doc.
 
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step10 after"` (or reset to discard the After run). `git status` should be clean before Step 11.
+
 ### Step 11: Quality gate
 **Before:** the Problems panel and `node scripts/lint-count.mjs` show 24; the agent can add a page that raises it and still finish.\
 **After:** the count is 19 or lower, `--check` passes, format verify passes for the files you changed, and the agent will not finish with new warnings.
@@ -301,7 +321,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 3. Ask the agent: `Add an /archive page that lists completed tasks.` Run `node scripts/lint-count.mjs` again. Did the count rise? Did the build fail?
 4. Reset.
 
-**Copy** `cp -R examples/step11-quality-gate/. ./` → `.agents/skills/quality-gate/SKILL.md`, `.claude/skills/quality-gate` (symlink), `scripts/hooks/quality-gate.sh`, full `.github/hooks/lab-guards.json`, `.claude/settings.json`, `.codex/hooks.json`, `AGENTS.md` (adds "Quality"), and the full `tasks-lab` plugin and marketplace files (matrix rows 4, 8, 11).
+**Copy** `cp -R examples/step11-quality-gate/. ./ && git add -A && git commit -m "lab: step11 copy example"` → `.agents/skills/quality-gate/SKILL.md`, `.claude/skills/quality-gate` (symlink), `scripts/hooks/quality-gate.sh`, full `.github/hooks/lab-guards.json`, `.claude/settings.json`, `.codex/hooks.json`, `AGENTS.md` (adds "Quality"), and the full `tasks-lab` plugin and marketplace files (matrix rows 4, 8, 11).
 
 **Read**
 
@@ -319,3 +339,6 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 **Try** Lower the baseline total by one and watch the stop hook send the agent back to work.
 
 Finish with `dotnet build` and `dotnet test`.
+
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step11 after"`. `git status` should be clean.
+
