@@ -60,7 +60,7 @@ The reset command only removes uncommitted changes, never the examples you commi
 - Each rule answers one checklist line: `TaskService` only, `TimeProvider`, the "Definition of done" list.
 - It is short (under 60 lines). Long files dilute the rules that matter.
 - `CLAUDE.md` is a one-line adapter (`@AGENTS.md`) so Claude Code reads the same text.
-- `.github/copilot-instructions.md` is a symlink to `AGENTS.md`. Some Copilot targets (e.g. the VS Code **Copilot** session target) did not load `AGENTS.md` in testing; every Copilot surface reads this file.
+- `.github/copilot-instructions.md` is a one-line pointer: read `AGENTS.md` first. The VS Code **Copilot** session target loads this file but not `AGENTS.md`, and does not follow symlinks.
 
 **Check it loaded** In a new chat, ask: `Without reading any files, what do your instructions say about getting the current time?` It should mention `TimeProvider`. If not, reload the window (Copilot) or restart the session, and ask again in a new chat.
 

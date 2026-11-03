@@ -10,7 +10,7 @@ Support: **yes**, **partial**, **no**, **unverified**. Sources are listed below 
 
 | # | Primitive | Copilot (VS Code) | Claude Code | Codex |
 |---|---|---|---|---|
-| 1 | Repo instructions | `AGENTS.md`: yes [V], but the VS Code **Copilot** session target did not load it in testing; add `.github/copilot-instructions.md` as a symlink to `../AGENTS.md` | `CLAUDE.md` with `@AGENTS.md`: yes. Reads `AGENTS.md` natively only when no `CLAUDE.md` exists [C1] | `AGENTS.md`: yes [X2] |
+| 1 | Repo instructions | `AGENTS.md`: yes [V], but the VS Code **Copilot** session target did not load it in testing; add a real `.github/copilot-instructions.md` (not a symlink) that says to read `AGENTS.md` first | `CLAUDE.md` with `@AGENTS.md`: yes. Reads `AGENTS.md` natively only when no `CLAUDE.md` exists [C1] | `AGENTS.md`: yes [X2] |
 | 2 | Nested instructions | nested `AGENTS.md`: unverified | subfolder `CLAUDE.md`/`AGENTS.md`, loaded on demand: yes [C1] | nested `AGENTS.md`: unverified |
 | 3 | Path-scoped rules | `.github/instructions/*.instructions.md` with `applyTo`: yes (Copilot extra) [V] | `.claude/rules/*.md` with `paths:`: yes [C1] | no glob rules; use a nested `AGENTS.md`: partial |
 | 4 | Skills | `.github/skills/<name>/`: yes; `.agents/skills/<name>/`: yes [V] | `.claude/skills/<name>/`: yes; symlinked folder: yes; `.agents/skills`: no [C2] | `.agents/skills/<name>/`: yes; symlinks followed: yes [X1] |
