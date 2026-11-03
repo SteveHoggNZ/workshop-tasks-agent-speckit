@@ -4,6 +4,8 @@ These instructions take an idea from a vague problem to working, tested code in 
 
 Spec Kit works with the coding agent of your choice. The examples use **GitHub Copilot CLI**; see [Using another agent](#using-another-agent) for Codex and Claude Code.
 
+> **Spec Kit is not installed on `main`.** First install Step 12: `cp -R examples/step12-spec-kit/. ./` (this restores `.specify/`, `.github/skills/speckit-*` and `.agents/skills/speckit-*`, already configured as in install steps 4–6 below). See [WORKSHOP.md Step 12](WORKSHOP.md#step-12-spec-driven-development-spec-kit).
+
 ## Install
 
 ### 1. Prerequisites

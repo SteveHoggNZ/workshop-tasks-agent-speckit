@@ -1,5 +1,6 @@
 """Make Spec Kit's git extension auto-commit after every step, so nobody has to remember to.
 
+In this repo, first install Step 12: cp -R examples/step12-spec-kit/. ./ (already configured).
 Run from a repo where `specify extension add git` has been done:
     uv run --with pyyaml python scripts/configure_speckit_git.py <repo-root>
 

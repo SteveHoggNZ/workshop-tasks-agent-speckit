@@ -2,7 +2,7 @@
 
 This records every Spec Kit customisation made for the workshop, what was changed from the defaults, and why. [INSTRUCTIONS.md](../INSTRUCTIONS.md) explains how to *use* Spec Kit; this file explains how it was *configured*.
 
-The configuration lives on branch `demo/01-init`. You can reproduce it on any repo with the commands under [Reproduce on your own repo](#reproduce-on-your-own-repo).
+The configuration ships as the Step 12 example and is not installed on `main`. First install Step 12: `cp -R examples/step12-spec-kit/. ./`. You can reproduce it on any repo with the commands under [Reproduce on your own repo](#reproduce-on-your-own-repo).
 
 ## Versions
 

@@ -343,5 +343,36 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 Finish with `dotnet build` and `dotnet test`.
 
-**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step11 after"`. `git status` should be clean.
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step11 after"` (or reset to discard the After run). `git status` should be clean before Step 12.
+
+### Step 12: Spec-driven development (Spec Kit)
+**Before:** one prompt implements backlog B1; note how many of its 5 acceptance criteria work and how many new tests cover them.\
+**After:** the same feature built through spec, plan and tasks covers all 5 criteria, each with at least one test, and every phase is its own commit.
+
+**Before**
+
+1. Read B1 "Due dates and priority" in `docs/backlog.md`.
+2. In Agent mode, ask: `Implement backlog item B1 from docs/backlog.md.`
+3. Score it: which of the 5 acceptance criteria work (try the API calls and the task list page)? How many new tests are there? Run `dotnet test`.
+4. Reset.
+
+**Copy** `cp -R examples/step12-spec-kit/. ./ && git add -A && git commit -m "lab: step12 copy example"` → `.specify/` (templates, scripts, constitution, `assess` and `git` extensions), `.github/skills/speckit-*` (Copilot), `.agents/skills/speckit-*` (Codex). No CLI needed; [INSTRUCTIONS.md](INSTRUCTIONS.md) has the full walkthrough and [docs/speckit-setup.md](docs/speckit-setup.md) how it was configured.
+
+**Read**
+
+- Each phase is a skill that writes one file the next reads: `spec.md` (what and why, no code), `plan.md` (how, checked against the constitution), `tasks.md` (small ordered tasks, tests first).
+- `.specify/memory/constitution.md` holds the non-negotiable rules every phase is checked against, like `AGENTS.md` for the whole workflow.
+- The `git` extension (`.specify/extensions.yml`) creates a feature branch (`NNN-<feature>`) at specify and auto-commits after every phase as `[Spec Kit] …`.
+- Codex uses `$speckit-…` instead of `/speckit-…`; the skill bodies are the same. Claude Code: see [Using another agent](INSTRUCTIONS.md#using-another-agent).
+
+**After**
+
+1. In a new chat, run in turn, reviewing each file before the next: `/speckit-specify Implement backlog item B1 from docs/backlog.md.` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`.
+2. Check `git branch --show-current` and `git log --oneline` show the feature branch and one commit per phase.
+3. Score it as in Before: acceptance criteria covered and new tests. Compare.
+4. A worked example of the whole run is on branch `001-due-date-priority-prebaked` (`git log --oneline main..origin/001-due-date-priority-prebaked`).
+
+**Try** Run `/speckit-clarify` before `/speckit-plan`, or `/speckit-analyze` before `/speckit-implement`, and see what it catches.
+
+**Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step12 after"` on the feature branch. `git status` should be clean.
 
