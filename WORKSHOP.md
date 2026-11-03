@@ -23,13 +23,15 @@ Use the **Local** session target in Copilot Chat for this workshop. Agent handof
 ### How each step works
 
 1. **Before**: run the prompt or measurement and write down the score.
-2. **Copy**: install the example from `examples/stepNN-<slug>/`. The folder mirrors the repo root, so one command installs it. Commit straight away so the reset below keeps it:
-   `cp -R examples/stepNN-<slug>/. ./ && git add -A && git commit -m "lab: stepNN"`
-3. **Read**: open each installed file. Look for the points listed.
-4. **After**: start a **new** chat or session (the old one has not loaded the new files), run the same prompt, and compare.
-5. **Try** (optional): make one small edit to the example and run again.
+2. **Reset**: throw away the Before changes so they are not committed: `git restore . && git clean -fd src tests`.
+3. **Copy**: install the example from `examples/stepNN-<slug>/` and commit it on its own:
+   `cp -R examples/stepNN-<slug>/. ./ && git add -A && git commit -m "lab: stepNN copy example"`
+4. **Read**: open each installed file. Look for the points listed.
+5. **After**: start a **new** chat or session (the old one has not loaded the new files), run the same prompt, and compare.
+6. **Try** (optional): make one small edit to the example and run again.
+7. **Commit**: keep the After result if it is good (`git add -A && git commit -m "lab: stepNN after"`), or discard it with the reset command. Either way, end each step with a clean `git status`.
 
-Reset between runs: `git restore . && git clean -fd src tests`. It only removes uncommitted agent changes, not the examples you committed. "Agent mode" means your tool's normal editing agent. Copying the folders in order gives the full solution.
+The reset command only removes uncommitted changes, never the examples you committed. Your commit history then shows each step as "copy example" followed by "after", which is easy to compare with `git diff`. "Agent mode" means your tool's normal editing agent. Copying the folders in order gives the full solution.
 
 ## Session 1: Instructions and agents
 
