@@ -1,0 +1,64 @@
+@page "/dashboard"
+@rendermode InteractiveServer
+@using CRUDTasksWithAgent.Models
+@using CRUDTasksWithAgent.Services
+@inject TaskService TaskService
+@inject TaskChangeNotifier Notifier
+@inject TaskStatsCalculator Stats
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1 class="mb-4">Dashboard</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Total tasks</dt>
+    <dd class="col-sm-9">@tasks.Count</dd>
+    <dt class="col-sm-3">Completed</dt>
+    <dd class="col-sm-9">@tasks.Count(t => t.IsComplete)</dd>
+    <dt class="col-sm-3">Open</dt>
+    <dd class="col-sm-9">@tasks.Count(t => !t.IsComplete)</dd>
+    <dt class="col-sm-3">Completion rate</dt>
+    <dd class="col-sm-9">@Stats.CompletionRate(tasks).ToString("0")%</dd>
+    <dt class="col-sm-3">Week starting</dt>
+    <dd class="col-sm-9">@Stats.WeekStart(DateTimeOffset.Now).ToString("ddd d MMM yyyy")</dd>
+</dl>
+
+<p class="text-muted small">Sparkline: @sparkline</p>
+
+@code {
+    private readonly byte[] _chartBuffer = new byte[4 * 1024 * 1024];
+    private List<TaskItem> tasks = new();
+    private string sparkline = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Notifier.Changed += OnChanged;
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        tasks = await TaskService.GetAllTasksAsync();
+        RenderSparkline();
+    }
+
+    private void RenderSparkline()
+    {
+        var points = Math.Min(tasks.Count, 16);
+        for (var i = 0; i < points; i++)
+        {
+            _chartBuffer[i] = tasks[i].IsComplete ? (byte)1 : (byte)0;
+        }
+        sparkline = string.Concat(_chartBuffer.Take(points).Select(b => b == 1 ? '▇' : '▁'));
+    }
+
+    private void OnChanged()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadAsync();
+            StateHasChanged();
+        });
+    }
+}

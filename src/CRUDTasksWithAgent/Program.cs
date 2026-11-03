@@ -24,6 +24,7 @@ builder.Services.AddScoped<IAgentFrameworkProvider, AgentFrameworkProvider>();
 
 // Register Foundry agent provider (for FoundryAgent.razor)
 builder.Services.AddScoped<IFoundryAgentProvider, FoundryAgentProvider>();
+builder.Services.AddLabFeatures();
 
 // Register OpenAPI for external agents
 builder.Services.AddOpenApi();

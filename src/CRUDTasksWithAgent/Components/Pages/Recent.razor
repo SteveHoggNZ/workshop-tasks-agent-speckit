@@ -1,0 +1,25 @@
+@page "/recent"
+@using CRUDTasksWithAgent.Models
+@inject TasksDbContext Db
+
+<PageTitle>Recent</PageTitle>
+
+<h1 class="mb-4">Recently added</h1>
+
+<ul class="list-group mb-3">
+    @foreach (var task in recent)
+    {
+        <li class="list-group-item">#@task.Id @task.Title</li>
+    }
+</ul>
+
+<p class="text-muted small">Loaded at @DateTime.Now</p>
+
+@code {
+    private List<TaskItem> recent = new();
+
+    protected override void OnInitialized()
+    {
+        recent = Db.Tasks.OrderByDescending(t => t.Id).Take(10).ToList();
+    }
+}

@@ -1,0 +1,58 @@
+@page "/bulk"
+@rendermode InteractiveServer
+@using System.Text.RegularExpressions
+@using CRUDTasksWithAgent.Models
+
+<PageTitle>Bulk</PageTitle>
+
+<h1 class="mb-4">Bulk tasks</h1>
+
+<div class="mb-3 row g-2 align-items-center">
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="Generate">Generate 5,000 sample tasks</button>
+    </div>
+    <div class="col-auto">
+        <input class="form-control" placeholder="Search" @bind="term" @bind:event="oninput" />
+    </div>
+</div>
+
+<p>@Filtered().Count of @items.Count tasks</p>
+
+<table class="table table-sm">
+    <tbody>
+        @foreach (var item in Filtered())
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Title</td>
+                <td>@(item.IsComplete ? "Done" : "Open")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<TaskItem> items = new();
+    private string term = string.Empty;
+
+    private void Generate()
+    {
+        items = Enumerable.Range(1, 5000)
+            .Select(i => new TaskItem { Id = i, Title = $"Sample task {i}", IsComplete = i % 3 == 0 })
+            .ToList();
+    }
+
+    private List<TaskItem> Filtered()
+    {
+        var results = new List<TaskItem>();
+        foreach (var item in items)
+        {
+            var regex = new Regex(term, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            if (regex.IsMatch(item.Title) && !results.Contains(item))
+            {
+                results.Add(item);
+            }
+        }
+        return results;
+    }
+}
