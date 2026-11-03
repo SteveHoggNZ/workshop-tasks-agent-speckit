@@ -16,7 +16,7 @@ For inspiration, browse [github/awesome-copilot](https://github.com/github/aweso
 5. Run the tests once: `dotnet test`.
 6. Commit after each step. Use a short message such as `lab: step 1 AGENTS.md`.
 7. Note: task data lives in memory. Restart the app to reset it.
-8. For Step 7 offline: `npx -y @playwright/mcp@<version> --help && npx playwright install chromium`. Pin the same version everywhere.
+8. For Step 7 offline: `npx -y @playwright/mcp@0.0.84 --help && npx playwright install chromium`. Pin the same version everywhere.
 9. Enable hooks (Steps 10-11): Copilot `"chat.useHooks": true`; Claude trust the workspace; Codex `features.hooks` and trust the project. See [per-tool setup](docs/agent-compatibility.md#per-tool-setup).
 
 ### Session target (Copilot)
@@ -189,7 +189,7 @@ Copilot extra: use the `handoffs` frontmatter so a button appears at the end of 
 
 **Create**
 
-1. A project MCP config that starts the Playwright MCP server (`npx -y @playwright/mcp@<version>`), server key `playwright` (see matrix row 10): `.vscode/mcp.json`, `.mcp.json` or `.codex/config.toml`. Start or approve it in your tool.
+1. A project MCP config that starts the Playwright MCP server (`npx -y @playwright/mcp@0.0.84`), server key `playwright` (see matrix row 10): `.vscode/mcp.json`, `.mcp.json` or `.codex/config.toml`. Start or approve it in your tool.
 2. `.github/agents/debugger.agent.md` (Claude `.claude/agents/debugger.md`). Give it a fixed loop: reproduce, hypothesise, instrument, fix, add a regression check. Give it the Playwright tools (Copilot `playwright/*`, Claude `mcp__playwright__*`; must match the server key) so it can drive the browser itself.
 
 **Prove it**

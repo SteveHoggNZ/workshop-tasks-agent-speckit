@@ -83,7 +83,7 @@ The target is relative to the link's folder, not to your shell. Git stores symli
 
 - Picks up `AGENTS.md` and `.agents/skills`. Project `.codex/config.toml` (MCP, hooks, agents) loads **only when the project is trusted**.
 - Hooks: turn on `features.hooks` in config. The `hooks.json` location, stdin schema and output format are unverified; test with sample JSON first.
-- MCP: `[mcp_servers.playwright]` with `command = "npx"` and `args = ["-y", "@playwright/mcp@<version>"]`. Check with `codex mcp list` (unverified).
+- MCP: `[mcp_servers.playwright]` with `command = "npx"` and `args = ["-y", "@playwright/mcp@0.0.84"]`. Check with `codex mcp list` (unverified).
 - Custom agents are TOML (`[agents.<name>] description, config_file`), not markdown. No handoffs.
 - Check: `/skills` lists skills; invoke one with `$name`.
 
