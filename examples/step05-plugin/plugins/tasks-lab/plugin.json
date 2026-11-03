@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "tasks-lab",
+  "description": "Workshop lab primitives for CRUDTasksWithAgent: docs reviewer agent and add-agent-tool skill.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Workshop"
+  },
+  "license": "MIT",
+  "keywords": ["dotnet", "blazor", "workshop"],
+  "extensions": {
+    "com.github.awesome-copilot": {
+      "agents": [
+        "./copilot/agents/docs-reviewer.agent.md"
+      ],
+      "skills": [
+        "./skills/add-agent-tool/"
+      ]
+    }
+  }
+}

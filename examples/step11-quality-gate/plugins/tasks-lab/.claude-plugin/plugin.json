@@ -1,0 +1,5 @@
+{
+  "name": "tasks-lab",
+  "version": "1.0.0",
+  "description": "Workshop lab primitives for CRUDTasksWithAgent: TDD and debugging agents, docs reviewer, add-agent-tool, dotnet-diagnostics and quality-gate skills, and guard hooks."
+}

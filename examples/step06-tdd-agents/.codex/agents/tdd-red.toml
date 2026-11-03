@@ -1,0 +1,4 @@
+# Codex custom agent; body text lives in .agents/agents/tdd-red.md.
+name = "tdd-red"
+description = "TDD red phase. Writes one failing test under tests/ and nothing else."
+developer_instructions = "Read .agents/agents/tdd-red.md first and follow it exactly. When done, tell the user to continue with the tdd-green agent."

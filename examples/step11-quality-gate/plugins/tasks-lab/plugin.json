@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "tasks-lab",
+  "description": "Workshop lab primitives for CRUDTasksWithAgent: TDD and debugging agents, docs reviewer, add-agent-tool, dotnet-diagnostics and quality-gate skills, and guard hooks.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Workshop"
+  },
+  "license": "MIT",
+  "keywords": ["dotnet", "blazor", "tdd", "diagnostics", "hooks", "workshop"],
+  "extensions": {
+    "com.github.awesome-copilot": {
+      "agents": [
+        "./copilot/agents/tdd-red.agent.md",
+        "./copilot/agents/tdd-green.agent.md",
+        "./copilot/agents/tdd-refactor.agent.md",
+        "./copilot/agents/debugger.agent.md",
+        "./copilot/agents/docs-reviewer.agent.md"
+      ],
+      "skills": [
+        "./skills/add-agent-tool/",
+        "./skills/dotnet-diagnostics/",
+        "./skills/quality-gate/"
+      ],
+      "hooks": [
+        "./hooks/hooks.json"
+      ]
+    }
+  }
+}

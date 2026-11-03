@@ -1,0 +1,4 @@
+# Codex custom agent; body text lives in .agents/agents/tdd-green.md.
+name = "tdd-green"
+description = "TDD green phase. Makes the failing test pass with the smallest code change."
+developer_instructions = "Read .agents/agents/tdd-green.md first and follow it exactly. When done, tell the user to continue with the tdd-refactor agent."

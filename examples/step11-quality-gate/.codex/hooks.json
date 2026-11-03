@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "apply_patch",
+        "hooks": [{ "type": "command", "command": "bash \"$(git rev-parse --show-toplevel)/scripts/hooks/guard-edits.sh\" --tool codex", "timeout": 10 }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch",
+        "hooks": [{ "type": "command", "command": "bash \"$(git rev-parse --show-toplevel)/scripts/hooks/build-after-edit.sh\" --tool codex", "timeout": 180 }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "bash \"$(git rev-parse --show-toplevel)/scripts/hooks/quality-gate.sh\" --tool codex", "timeout": 300 }]
+      }
+    ]
+  }
+}

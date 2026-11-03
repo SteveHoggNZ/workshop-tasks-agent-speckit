@@ -1,0 +1,4 @@
+# Codex agent files can't restrict tools or sandbox; read-only is enforced by instructions only.
+name = "docs-reviewer"
+description = "Read-only reviewer that compares docs with the code and reports drift. Never edits files."
+developer_instructions = "Read .agents/agents/docs-reviewer.md first and follow it exactly. Never edit, create or delete files."

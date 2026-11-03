@@ -1,0 +1,4 @@
+# Codex custom agent; body text lives in .agents/agents/debugger.md.
+name = "debugger"
+description = "Reproduces UI bugs in the browser with the playwright MCP server, then fixes them with a regression check."
+developer_instructions = "Read .agents/agents/debugger.md first and follow it exactly. Use the playwright MCP tools from .codex/config.toml."

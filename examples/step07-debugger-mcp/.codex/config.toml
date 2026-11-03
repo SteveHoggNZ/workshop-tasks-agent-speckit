@@ -1,0 +1,4 @@
+# Project config loads only when the project is trusted. Agents: .codex/agents/*.toml. Hooks: .codex/hooks.json.
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@0.0.84"]

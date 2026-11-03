@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "bash scripts/hooks/guard-edits.sh --tool copilot",
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "command": "bash scripts/hooks/build-after-edit.sh --tool copilot",
+        "timeoutSec": 180
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "command": "bash scripts/hooks/quality-gate.sh --tool copilot",
+        "timeoutSec": 300
+      }
+    ]
+  }
+}

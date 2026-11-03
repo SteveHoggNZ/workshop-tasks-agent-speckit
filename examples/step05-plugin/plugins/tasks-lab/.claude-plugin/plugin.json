@@ -1,0 +1,5 @@
+{
+  "name": "tasks-lab",
+  "version": "1.0.0",
+  "description": "Workshop lab primitives for CRUDTasksWithAgent: docs reviewer agent and add-agent-tool skill."
+}

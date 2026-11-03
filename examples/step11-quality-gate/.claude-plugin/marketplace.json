@@ -1,0 +1,11 @@
+{
+  "name": "tasks-lab",
+  "owner": { "name": "Workshop" },
+  "plugins": [
+    {
+      "name": "tasks-lab",
+      "source": "./plugins/tasks-lab",
+      "description": "TDD and debugging agents, docs reviewer, add-agent-tool, dotnet-diagnostics and quality-gate skills, and guard hooks for CRUDTasksWithAgent."
+    }
+  ]
+}

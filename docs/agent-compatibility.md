@@ -41,6 +41,8 @@ Tool-name differences: a read-only agent uses `read`, `search` in Copilot and `R
 
 ## Portable recipe
 
+The ready-made files in `examples/stepNN-<slug>/` follow this recipe; copy a folder to the repo root to install it. No tool reads `examples/` itself, though Claude Code and Copilot's nested-`AGENTS.md` option may pick up its `AGENTS.md`/`CLAUDE.md` files while you edit files inside `examples/`.
+
 Keep **one canonical copy** of shared content. Each tool gets a symlink or a small adapter file (10 lines or fewer). Features only Copilot has (prompt files, `handoffs`, `applyTo`) are **Copilot extras**: use them if you are on Copilot, skip them otherwise.
 
 | Primitive | Canonical copy | Adapters |

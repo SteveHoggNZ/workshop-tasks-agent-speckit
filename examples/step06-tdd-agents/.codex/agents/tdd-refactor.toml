@@ -1,0 +1,4 @@
+# Codex custom agent; body text lives in .agents/agents/tdd-refactor.md.
+name = "tdd-refactor"
+description = "TDD refactor phase. Tidies code and tests without changing behaviour."
+developer_instructions = "Read .agents/agents/tdd-refactor.md first and follow it exactly."

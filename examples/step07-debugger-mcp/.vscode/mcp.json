@@ -1,0 +1,10 @@
+// Copilot (VS Code) MCP servers. Claude reads .mcp.json; Codex reads .codex/config.toml.
+{
+  "servers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.84"]
+    }
+  }
+}

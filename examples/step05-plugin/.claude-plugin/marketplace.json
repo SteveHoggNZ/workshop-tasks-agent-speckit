@@ -1,0 +1,11 @@
+{
+  "name": "tasks-lab",
+  "owner": { "name": "Workshop" },
+  "plugins": [
+    {
+      "name": "tasks-lab",
+      "source": "./plugins/tasks-lab",
+      "description": "Docs reviewer agent and add-agent-tool skill for CRUDTasksWithAgent."
+    }
+  ]
+}
