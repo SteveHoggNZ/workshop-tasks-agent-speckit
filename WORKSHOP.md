@@ -260,7 +260,7 @@ Extend `dotnet-diagnostics` if needed (see matrix row 4). The skill should expla
 
 **Create** (see matrix rows 8 and 9; enable hooks first, Setup 9)
 
-1. A hook config and scripts: Copilot `.github/hooks/lab-guards.json` + `.github/hooks/scripts/`; Claude `.claude/settings.json` `hooks`; Codex `.codex/` hooks (format unverified).
+1. A hook config and scripts: Copilot `.github/hooks/lab-guards.json` + `.github/hooks/scripts/`; Claude `.claude/settings.json` `hooks`; Codex `.codex/hooks.json` (see matrix row 8).
 2. A pre-tool hook (Copilot `preToolUse`, Claude/Codex `PreToolUse`) that blocks edits under `infra/`.
 3. A pre-tool hook that blocks edits outside `tests/` while a `.tdd-red` marker file exists, including multi-file edits. Update `tdd-red` to create the marker and `tdd-green` to remove it. Add `.tdd-red` to `.gitignore`.
 4. A post-tool hook (`postToolUse` / `PostToolUse`) that runs a quiet build after a `.cs` or `.razor` edit and reports errors to the agent without blocking.
