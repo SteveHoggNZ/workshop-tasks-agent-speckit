@@ -242,4 +242,24 @@ Check the current VS Code hooks docs for the input and output format. Test each 
 2. The edits should be blocked with a clear reason.
 3. Make a deliberate syntax error through the agent. The build hook should report it.
 
-Then return to Step 5 and add the diagnostics skill and hooks to your plugin. Finish with `dotnet build` and `dotnet test`.
+### Step 11: Quality gate
+
+**Symptom**
+
+1. Run `node scripts/lint-count.mjs`. Compare the total with `docs/lint-baseline.md`. Run `node scripts/lint-count.mjs --check`.
+2. Run `dotnet format CRUDTasksWithAgent.slnx --verify-no-changes`. Note the exit code. Do not run it without `--verify-no-changes`.
+3. Ask the agent: `Add an /archive page that lists completed tasks.` Run `node scripts/lint-count.mjs` again. Did the count rise? Did the build fail?
+4. Discard the change: `git restore . && git clean -fd src tests`.
+
+**Create**
+
+1. `.github/skills/quality-gate/SKILL.md`: the checks to run before finishing (build, format verify, lint count check, tests), and the rule to fix new warnings rather than suppress them or raise the baseline.
+2. An `agentStop` hook in `.github/hooks/lab-guards.json` that runs the lint count check and format verify, and tells the agent to keep working if either fails. Check the docs for the exact event name.
+3. Promote nullable warnings to errors in `Directory.Build.props`. Fix what breaks, then update `docs/lint-baseline.md` to the new total.
+
+**Prove it**
+
+1. Repeat the Symptom prompt in a new chat. The agent should not finish while the count is above the baseline.
+2. `node scripts/lint-count.mjs --check` passes and `dotnet build` shows no nullable warnings.
+
+Then return to Step 5 and add the diagnostics skill, quality-gate skill and hooks to your plugin. Finish with `dotnet build` and `dotnet test`.

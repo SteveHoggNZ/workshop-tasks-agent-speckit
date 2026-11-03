@@ -6,6 +6,8 @@
 
 <h1 class="mb-4">Recently added</h1>
 
+<p class="lead">Latest: @recent.FirstOrDefault().Title</p>
+
 <ul class="list-group mb-3">
     @foreach (var task in recent)
     {
@@ -16,7 +18,7 @@
 <p class="text-muted small">Loaded at @DateTime.Now</p>
 
 @code {
-    private List<TaskItem> recent = new();
+    private List<TaskItem> recent;
 
     protected override void OnInitialized()
     {

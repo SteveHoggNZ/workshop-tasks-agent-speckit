@@ -1,8 +1,9 @@
-namespace CRUDTasksWithAgent.Services;
-
-public class TaskChangeNotifier
+namespace CRUDTasksWithAgent.Services
 {
-    public event Action? Changed;
+    public class TaskChangeNotifier
+    {
+        public event Action? Changed;
 
-    public void NotifyChanged() => Changed?.Invoke();
+        public void NotifyChanged() => Changed?.Invoke();
+    }
 }

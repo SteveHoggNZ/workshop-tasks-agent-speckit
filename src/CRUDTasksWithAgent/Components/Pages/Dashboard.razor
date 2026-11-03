@@ -20,7 +20,7 @@
     <dt class="col-sm-3">Completion rate</dt>
     <dd class="col-sm-9">@Stats.CompletionRate(tasks).ToString("0")%</dd>
     <dt class="col-sm-3">Week starting</dt>
-    <dd class="col-sm-9">@Stats.WeekStart(DateTimeOffset.Now).ToString("ddd d MMM yyyy")</dd>
+    <dd class="col-sm-9">@Stats.WeekLabel(DateTimeOffset.Now)</dd>
 </dl>
 
 <p class="text-muted small">Sparkline: @sparkline</p>

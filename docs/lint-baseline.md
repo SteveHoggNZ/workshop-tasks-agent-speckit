@@ -10,21 +10,23 @@ Configuration lives in [`Directory.Build.props`](../Directory.Build.props) (anal
 
 ## Baseline
 
-<!-- lint-baseline-total: 19 -->
+<!-- lint-baseline-total: 24 -->
 
-`dotnet build CRUDTasksWithAgent.slnx --no-incremental` → **0 errors, 19 unique warnings**.
+`dotnet build CRUDTasksWithAgent.slnx --no-incremental` → **0 errors, 24 unique warnings**.
 
 | Rule | Count | Meaning |
 | --- | ---: | --- |
-| IDE0161 | 11 | Use file-scoped namespace (`csharp_style_namespace_declarations = file_scoped:warning`) |
-| IDE0005 | 2 | Unnecessary `using` directive |
-| CA1305 | 1 | Specify `IFormatProvider` (tests) |
+| IDE0161 | 12 | Use file-scoped namespace (`csharp_style_namespace_declarations = file_scoped:warning`) |
+| IDE0005 | 3 | Unnecessary `using` directive |
+| CA1305 | 2 | Specify `IFormatProvider` |
 | CA1848 | 1 | Use `LoggerMessage` delegates |
 | CA1861 | 1 | Constant array argument → `static readonly` field (tests) |
+| CS8602 | 1 | Dereference of a possibly null reference |
+| CS8618 | 1 | Non-nullable field uninitialised when exiting constructor |
 | IDE0051 | 1 | Unused private member (`TaskCrudTool.FormatTask`) |
 | IDE0059 | 1 | Unnecessary assignment (`task` in `TaskCrudTool`) |
 | NU1510 | 1 | `System.Text.Json` package reference will not be pruned (restore warning) |
-| **Total** | **19** | |
+| **Total** | **24** | |
 
 Rules configured as `warning` with currently **zero** hits: IDE0052, CA1822.
 
@@ -46,8 +48,8 @@ msbuild prints every warning once per project build and again in the end-of-buil
 ## `dotnet format --verify-no-changes`
 
 `dotnet format CRUDTasksWithAgent.slnx --verify-no-changes` exits with **code 2** (changes needed). It reports the
-same diagnostics it can auto-fix or see: 16 unique findings — 11× IDE0161, 2× IDE0005, 1× IDE0051, 1× IDE0059,
-1× CA1848 (each repeated once per target in the raw output). It does not report CA1305, CA1861 or NU1510.
+same diagnostics it can auto-fix or see: 18 unique findings — 12× IDE0161, 3× IDE0005, 1× IDE0051, 1× IDE0059,
+1× CA1848 (each repeated once per target in the raw output). It does not report CA1305, CA1861, CS8602, CS8618 or NU1510.
 Only ever run it with `--verify-no-changes` here; running `dotnet format` without it would erase the lab debt.
 
 ## Tooling

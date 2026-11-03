@@ -16,4 +16,6 @@ public class TaskStatsCalculator
         var today = now.LocalDateTime.Date;
         return today.AddDays((int)DayOfWeek.Monday - (int)today.DayOfWeek);
     }
+
+    public string WeekLabel(DateTimeOffset now) => WeekStart(now).ToString("ddd d MMM yyyy");
 }

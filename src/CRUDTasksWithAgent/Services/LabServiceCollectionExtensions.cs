@@ -1,3 +1,5 @@
+using CRUDTasksWithAgent.Models;
+
 namespace CRUDTasksWithAgent.Services;
 
 public static class LabServiceCollectionExtensions
