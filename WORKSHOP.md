@@ -21,11 +21,13 @@ Use the **Local** session target in Copilot Chat for this workshop. Agent handof
 
 ### How each step works
 
-**Symptom**: what to do and what to look for. **Create**: the file to add and what it should cover; you write the content. **Prove it**: run the same prompt or measurement before and after, in a new chat, and compare.
+**Before/After**: what you see now and what you should see once your primitive works. **Symptom**: what to do and what to look for. **Create**: the file to add and what it should cover; you write the content. **Prove it**: run the same prompt or measurement before and after, in a new chat, and compare.
 
 ## Session 1: Instructions and agents
 
 ### Step 1: Project instructions (`AGENTS.md`)
+**Before:** the generated `/completed` page injects `TasksDbContext` and prints `DateTime.Now`, like `/recent`.\
+**After:** the generated page uses `TaskService` and `TimeProvider`, and so does `/recent` once the agent fixes it.
 
 **Symptom**
 
@@ -43,6 +45,8 @@ Use the **Local** session target in Copilot Chat for this workshop. Agent handof
 Run the same prompt in a new chat. The new page should follow your rules, not the patterns in `/recent`. Then ask the agent to fix `/recent` to match.
 
 ### Step 2: File-scoped instructions (`*.instructions.md`)
+**Before:** the review misses what you saw on `/board` and `/dashboard`; References lists no instructions file.\
+**After:** References lists `blazor.instructions.md`, and the review and new component follow each of your rules.
 
 **Symptom**
 
@@ -66,6 +70,8 @@ Optionally add `.github/instructions/tests.instructions.md` for files under `tes
 Do not fix the bugs yet. Steps 5 and 7 cover them.
 
 ### Step 3: Skill vs prompt file (`add-agent-tool`)
+**Before:** `clear completed` in `/agentfx` is not understood, or no new test exists; note how many of the files you found were changed.\
+**After:** `clear completed` works, `dotnet test` shows one or more new passing tests, and every file in your skill was changed.
 
 **Symptom**
 
@@ -88,6 +94,8 @@ Find the files yourself. Start from `src/CRUDTasksWithAgent/Tools/` and `tests/`
 3. Write down one difference between a prompt file and a skill.
 
 ### Step 4: Read-only reviewer agent (`docs-reviewer`)
+**Before:** your own list of drift items between `docs/architecture.md` and the code (write down the count).\
+**After:** the agent's list covers at least your items, it cannot edit the doc, and a re-review after the fix reports no drift.
 
 **Symptom**
 
@@ -107,6 +115,8 @@ Find the files yourself. Start from `src/CRUDTasksWithAgent/Tools/` and `tests/`
 4. Switch to the default agent and fix the doc using the report.
 
 ### Step 5: Package it (plugin)
+**Before:** another workspace's agent picker shows none of your agents or skills.\
+**After:** after installing `tasks-lab`, your agents appear in the picker and your skills load there.
 
 **Symptom**
 
@@ -132,6 +142,8 @@ Come back to this step after Session 2 to add the new skill and hooks.
 ## Session 2: Advanced workflows
 
 ### Step 6: TDD agents with handoffs (`tdd-red`, `tdd-green`, `tdd-refactor`)
+**Before:** Dashboard shows `NaN%` with no tasks; `dotnet test` has 0 tests for `TaskStatsCalculator`; after `tdd-red`, 1 failing.\
+**After:** 0 failing tests, at least 2 new passing ones, `0%` with no tasks, and the right "Week starting" date every day.
 
 **Symptom**
 
@@ -160,6 +172,8 @@ Use the `handoffs` frontmatter so a button appears at the end of each turn.
 6. Check the dashboard again.
 
 ### Step 7: Debugger agent with Playwright MCP
+**Before:** after ticking the first task, a different row's checkbox is ticked; the struck-through rows and the reload disagree.\
+**After:** checkboxes match the struck-through rows before and after reload, and the agent showed the bug in the browser first.
 
 **Symptom**
 
@@ -180,6 +194,8 @@ Use the `handoffs` frontmatter so a button appears at the end of each turn.
 4. Repeat the Symptom steps yourself.
 
 ### Step 8: Diagnostics skill: slow page
+**Before:** visible lag on each keystroke and `[` breaks the page; record CPU % and the top frame from the trace.\
+**After:** no visible lag, `[` is a normal search, CPU % is lower and the old top frame is gone from the top 15.
 
 **Symptom**
 
@@ -200,6 +216,8 @@ Make scripts executable. Use `set -euo pipefail`. Bound every collection by time
 3. Measure again with the same steps. Compare the numbers.
 
 ### Step 9: Diagnostics skill: memory growth
+**Before:** GC heap size grows by tens of MB over 20 Dashboard visits and does not drop; record the MB.\
+**After:** the same 20 visits leave the heap roughly flat (a few MB), and the second heap dump shows no growth.
 
 **Symptom**
 
@@ -220,6 +238,8 @@ Extend `dotnet-diagnostics` if needed. The skill should explain how to take two 
 3. Repeat the Symptom. The heap should level off.
 
 ### Step 10: Hooks (guard rails)
+**Before:** `git status` shows `tdd-red` edited `src/` and the agent edited `infra/main.bicep`.\
+**After:** both edits are blocked with a reason, `git status` shows no `src/` or `infra/` changes, and a syntax error is reported.
 
 **Symptom**
 
@@ -243,6 +263,8 @@ Check the current VS Code hooks docs for the input and output format. Test each 
 3. Make a deliberate syntax error through the agent. The build hook should report it.
 
 ### Step 11: Quality gate
+**Before:** the Problems panel and `node scripts/lint-count.mjs` show 24; the agent can add a page that raises it and still finish.\
+**After:** the count is 19 or lower, `--check` and format verify pass, and the agent will not finish with new warnings.
 
 **Symptom**
 
