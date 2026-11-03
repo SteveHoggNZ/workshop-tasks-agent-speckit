@@ -30,23 +30,29 @@ Use the **Local** session target in Copilot Chat for this workshop. Agent handof
 ## Session 1: Instructions and agents
 
 ### Step 1: Project instructions (`AGENTS.md`)
-**Before:** the generated `/completed` page injects `TasksDbContext` and prints `DateTime.Now`, like `/recent`.\
-**After:** the generated page uses `TaskService` and `TimeProvider`, and so does `/recent` once the agent fixes it.
+**Before:** the generated `/completed` page scores 0–2 on the checklist below (typically copies `/recent`: `TasksDbContext`, `DateTime.Now`, no test).\
+**After:** the same prompt scores 4–5, and `/recent` matches once the agent fixes it.
 
 **Symptom**
 
 1. Open http://localhost:5280/recent. Note what it shows.
-2. In Agent mode, ask: `Add a /completed page that lists completed tasks and shows when the page was loaded.`
-3. Review the code it writes. Compare it with the rest of the app. Would you approve it?
-4. Discard the change: `git restore . && git clean -fd src tests`.
+2. In Agent mode, ask: `Add a /completed page, like the Recent page, that lists completed tasks and shows when the page was loaded.`
+3. Score the change, one point each:
+   - Data comes through the app's service, not straight from the database context.
+   - The current time comes from an injectable clock, not `DateTime.Now`/`DateTimeOffset.Now`.
+   - A test was added.
+   - The agent ran `node scripts/lint-count.mjs` and reported the result.
+   - `docs/architecture.md` lists the new page.
+4. Models vary. If it scores 3 or more, run it once more in a new chat and keep the lower score.
+5. Discard the change: `git restore . && git clean -fd src tests`.
 
 **Create**
 
-`AGENTS.md` at the repo root, under 60 lines (see matrix row 1; Claude also needs `CLAUDE.md` containing `@AGENTS.md`). Cover the stack and folder layout, how components get data, how code gets the current time, build and test commands, and folders the agent must not touch without asking.
+`AGENTS.md` at the repo root, under 60 lines (see matrix row 1; Claude also needs `CLAUDE.md` containing `@AGENTS.md`). Cover the stack and folder layout, how components get data, how code gets the current time, build, test and warning-count commands, what "done" means (tests, docs), and folders the agent must not touch without asking.
 
 **Prove it**
 
-Run the same prompt in a new chat. The new page should follow your rules, not the patterns in `/recent`. Then ask the agent to fix `/recent` to match.
+Run the same prompt in a new chat and score it again. The new page should follow your rules, not the patterns in `/recent`. Then ask the agent to fix `/recent` to match.
 
 ### Step 2: File-scoped instructions (`*.instructions.md`)
 **Before:** the review misses what you saw on `/board` and `/dashboard`; no Razor rules file is loaded (Copilot: References list).\
