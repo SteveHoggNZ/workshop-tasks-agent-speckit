@@ -15,11 +15,11 @@ Support: **yes**, **partial**, **no**, **unverified**. Sources are listed below 
 | 3 | Path-scoped rules | `.github/instructions/*.instructions.md` with `applyTo`: yes (Copilot extra) [V] | `.claude/rules/*.md` with `paths:`: yes [C1] | no glob rules; use a nested `AGENTS.md`: partial |
 | 4 | Skills | `.github/skills/<name>/`: yes; `.agents/skills/<name>/`: partial, unverified [V] | `.claude/skills/<name>/`: yes; symlinked folder: yes; `.agents/skills`: no [C2] | `.agents/skills/<name>/`: yes; symlinks followed: yes [X1] |
 | 5 | Prompt files | `.github/prompts/*.prompt.md`: yes (Copilot extra) [V] | a skill or `.claude/commands/*.md`: partial [C2] | a skill invoked as `$name`: partial [X1] |
-| 6 | Custom agents | `.github/agents/*.agent.md` (`tools`, `handoffs`): yes [V] | `.claude/agents/*.md` (`name`, `description`, `tools`): yes [C3] | `[agents.<name>]` in `.codex/config.toml` + `config_file` (TOML): partial, instruction key unverified [X2] |
+| 6 | Custom agents | `.github/agents/*.agent.md` (`tools`, `handoffs`): yes [V] | `.claude/agents/*.md` (`name`, `description`, `tools`): yes [C3] | `.codex/agents/<name>.toml` (`name`, `description`, `developer_instructions`): yes; can't set sandbox/MCP per agent [X4] |
 | 7 | Handoffs | `handoffs:` frontmatter, Local target only: yes (Copilot extra) [V] | no | no |
-| 8 | Hooks | `.github/hooks/*.json`, `preToolUse`/`postToolUse`/`agentStop`; needs `chat.useHooks`: yes [V] | `.claude/settings.json` `hooks`, `PreToolUse`/`PostToolUse`/`Stop`: yes [C4] | `hooks.json` or `[hooks]` under `.codex/`, PascalCase events: partial; file path and JSON schema unverified [X2] |
+| 8 | Hooks | `.github/hooks/*.json`, `preToolUse`/`postToolUse`/`agentStop`; needs `chat.useHooks`: yes [V] | `.claude/settings.json` `hooks`, `PreToolUse`/`PostToolUse`/`Stop`: yes [C4] | `.codex/hooks.json` (or `[hooks]` in `.codex/config.toml`), `PreToolUse`/`PostToolUse`/`Stop`, Claude-style JSON; edits arrive as `apply_patch`; needs project trust + `/hooks` review: yes [X3] |
 | 9 | Agent-scoped hooks | `hooks:` in agent frontmatter: yes [V] | `hooks:` in subagent frontmatter: yes [C3] | unverified |
-| 10 | MCP (project) | `.vscode/mcp.json` (`servers`): yes [V] | `.mcp.json` (`mcpServers`): yes; schema page unverified [C3] | `.codex/config.toml` `[mcp_servers.<id>]`, trusted projects only: yes [X2] |
+| 10 | MCP (project) | `.vscode/mcp.json` (`servers`): yes [V] | `.mcp.json` (`mcpServers`): yes [C6] | `.codex/config.toml` `[mcp_servers.<id>]`, trusted projects only: yes [X5] |
 | 11 | Plugin | `plugin.json` + `.github/plugin/marketplace.json`: partial; install from another workspace unverified [V] | `<plugin>/.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json`: yes; symlinks inside plugins unverified [C5] | marketplace `.agents/plugins/marketplace.json`: partial; plugin manifest unverified [X2] |
 
 Tool-name differences: a read-only agent uses `read`, `search` in Copilot and `Read, Grep, Glob` in Claude. MCP tools are `playwright/*` in Copilot and `mcp__playwright__*` in Claude. Agent frontmatter can't be shared between tools; share the body text only.
@@ -31,8 +31,12 @@ Tool-name differences: a read-only agent uses `read`, `search` in Copilot and `R
 - [C3] https://code.claude.com/docs/en/sub-agents
 - [C4] https://code.claude.com/docs/en/hooks
 - [C5] https://code.claude.com/docs/en/plugins
+- [C6] https://code.claude.com/docs/en/mcp
 - [X1] https://developers.openai.com/codex/skills (redirects to learn.chatgpt.com/docs/build-skills)
 - [X2] https://learn.chatgpt.com/docs/config-file/config-reference (Codex config reference)
+- [X3] https://learn.chatgpt.com/docs/hooks
+- [X4] https://learn.chatgpt.com/docs/agent-configuration/subagents
+- [X5] https://learn.chatgpt.com/docs/extend/mcp?surface=cli
 - [V] VS Code Copilot customization docs: https://code.visualstudio.com/docs/copilot/customization/
 
 ## Portable recipe
@@ -44,8 +48,8 @@ Keep **one canonical copy** of shared content. Each tool gets a symlink or a sma
 | Instructions (row 1) | `AGENTS.md` | `CLAUDE.md` containing the line `@AGENTS.md`. Prefer the import over a symlink because symlinks break on Windows clones. |
 | Path-scoped rules (row 3) | `docs/rules/<topic>.md` | Copilot: `.github/instructions/<topic>.instructions.md` (`applyTo` + text or link). Claude: `.claude/rules/<topic>.md` (`paths:`), or a symlink to the canonical file. Whether `@import` works inside rules files is unverified. Codex: nested `AGENTS.md` in the target folder. |
 | Skills (row 4) | `.agents/skills/<name>/SKILL.md` | Claude: symlink `.claude/skills/<name>`. Copilot: reads `.agents/skills` (unverified); if not, symlink `.github/skills/<name>`. Keep frontmatter to `name` and `description`; `name` must match the folder name. |
-| Custom agents (row 6) | body text (no frontmatter) | One file per tool with its own frontmatter: `.github/agents/<name>.agent.md`, `.claude/agents/<name>.md`, Codex `[agents.<name>]` TOML (unverified). |
-| Hooks (row 8) | `scripts/hooks/<name>.sh --tool copilot\|claude\|codex` | Per-tool config: `.github/hooks/<file>.json`, `.claude/settings.json` `hooks`, `.codex/hooks.json` (path unverified). The script reads both `tool_name`/`toolName` and `tool_input`/`toolArgs`, then writes the output format of the tool given in `--tool`. |
+| Custom agents (row 6) | body text (no frontmatter) | One file per tool with its own frontmatter: `.github/agents/<name>.agent.md`, `.claude/agents/<name>.md`, `.codex/agents/<name>.toml` (`developer_instructions`). |
+| Hooks (row 8) | `scripts/hooks/<name>.sh --tool copilot\|claude\|codex` | Per-tool config: `.github/hooks/<file>.json`, `.claude/settings.json` `hooks`, `.codex/hooks.json`. The script reads both `tool_name`/`toolName` and `tool_input`/`toolArgs`, then writes the output format of the tool given in `--tool`. |
 | MCP (row 10) | one server key, e.g. `playwright`, with the same pinned version | `.vscode/mcp.json`, `.mcp.json`, `.codex/config.toml`. |
 | Plugin (row 11) | Claude layout `plugins/<plugin>/.claude-plugin/plugin.json` with `skills/`, `agents/`, `hooks/` inside the plugin folder | Copilot `plugin.json` alongside. Every path must stay inside the plugin folder. Symlink support inside plugins is unverified. Codex plugin: optional. |
 
@@ -82,13 +86,13 @@ The target is relative to the link's folder, not to your shell. Git stores symli
 ### OpenAI Codex
 
 - Picks up `AGENTS.md` and `.agents/skills`. Project `.codex/config.toml` (MCP, hooks, agents) loads **only when the project is trusted**.
-- Hooks: turn on `features.hooks` in config. The `hooks.json` location, stdin schema and output format are unverified; test with sample JSON first.
-- MCP: `[mcp_servers.playwright]` with `command = "npx"` and `args = ["-y", "@playwright/mcp@0.0.84"]`. Check with `codex mcp list` (unverified).
-- Custom agents are TOML (`[agents.<name>] description, config_file`), not markdown. No handoffs.
+- Hooks: on by default (`[features] hooks = false` turns them off). Put them in `.codex/hooks.json`, same shape as Claude's `hooks` block. Trust the project, then review and trust each hook with `/hooks`. Stdin has `tool_name` (`apply_patch`, `Bash`, `mcp__x__y`) and `tool_input`; file edits arrive as `apply_patch` with the patch in `tool_input.command`. Block with exit 2 or `hookSpecificOutput.permissionDecision: "deny"`. Commands run in the session folder, so use a git-root path.
+- MCP: `[mcp_servers.playwright]` with `command = "npx"` and `args = ["-y", "@playwright/mcp@0.0.84"]`. Check with `codex mcp list` or `/mcp`.
+- Custom agents are TOML files in `.codex/agents/<name>.toml` with `name`, `description`, `developer_instructions`, not markdown. They inherit sandbox and MCP settings from the session. No handoffs.
 - Check: `/skills` lists skills; invoke one with `$name`.
 
 ## Unverified
 
 - Copilot: `.agents/skills` pickup; reads `CLAUDE.md`, `.claude/*`, `.mcp.json` or nested `AGENTS.md`; plugin install from another workspace.
-- Claude Code: `.mcp.json` schema/approval details; symlinks inside plugins; `@import` inside `.claude/rules` files.
-- Codex: nested `AGENTS.md`/`AGENTS.override.md` rules; `hooks.json` path and input/output schema; agent instruction key in TOML; plugin manifest; handling of unknown `SKILL.md` frontmatter.
+- Claude Code: symlinks inside plugins; `@import` inside `.claude/rules` files.
+- Codex: nested `AGENTS.md`/`AGENTS.override.md` rules; plugin manifest; handling of unknown `SKILL.md` frontmatter.
