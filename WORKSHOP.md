@@ -52,7 +52,7 @@ The reset command only removes uncommitted changes, never the examples you commi
 4. Models vary. If it scores 3 or more, run it once more in a new chat and keep the lower score.
 5. Reset.
 
-**Copy** `cp -R examples/step01-agents-md/. ./ && git add -A && git commit -m "lab: step01 copy example"` → `AGENTS.md`, `CLAUDE.md` (matrix row 1).
+**Copy** `cp -R examples/step01-agents-md/. ./ && git add -A && git commit -m "lab: step01 copy example"` → `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md` (matrix row 1).
 
 **Read**
 
@@ -60,6 +60,9 @@ The reset command only removes uncommitted changes, never the examples you commi
 - Each rule answers one checklist line: `TaskService` only, `TimeProvider`, the "Definition of done" list.
 - It is short (under 60 lines). Long files dilute the rules that matter.
 - `CLAUDE.md` is a one-line adapter (`@AGENTS.md`) so Claude Code reads the same text.
+- `.github/copilot-instructions.md` is a symlink to `AGENTS.md`. Some Copilot targets (e.g. the VS Code **Copilot** session target) did not load `AGENTS.md` in testing; every Copilot surface reads this file.
+
+**Check it loaded** In a new chat, ask: `Without reading any files, what do your instructions say about getting the current time?` It should mention `TimeProvider`. If not, reload the window (Copilot) or restart the session, and ask again in a new chat.
 
 **After** Run the same prompt in a new chat and score it again. The new page should follow the rules, not the patterns in `/recent`. Then ask the agent to fix `/recent` to match.
 
