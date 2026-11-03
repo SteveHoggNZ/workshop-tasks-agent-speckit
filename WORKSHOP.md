@@ -9,7 +9,7 @@ Where each tool expects each file: [agent compatibility matrix](docs/agent-compa
 1. Install the .NET 10 SDK, Node.js 22+, Git and your agent: VS Code Insiders with GitHub Copilot, Claude Code, or Codex CLI.
 2. Install the diagnostics tools:
    `for t in dotnet-counters dotnet-trace dotnet-gcdump dotnet-stack; do dotnet tool install -g $t; done`
-3. Create your branch: `git switch workshop/baseline && git switch -c lab/<your-name>`.
+3. Create your branch: `git switch main && git switch -c lab/<your-name>`.
 4. Run the app: `dotnet run --project src/CRUDTasksWithAgent`. Open http://localhost:5280.
 5. Run the tests once: `dotnet test`.
 6. Note: task data lives in memory. Restart the app to reset it.
