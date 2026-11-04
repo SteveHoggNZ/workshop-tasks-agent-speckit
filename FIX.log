@@ -1,0 +1,81 @@
+FIX.log - lab fixes and validation, 2026-11-05
+==============================================
+
+Scope: make WORKSHOP.md Steps 6-10 show a clear Before -> After for their
+primitive. Validated with GitHub Copilot CLI 1.0.105 (default model), each run
+in a temporary clone of main with the earlier examples/stepNN-* folders copied
+in order. Not validated: VS Code, Claude Code (login expired), Codex.
+
+Changes on main
+---------------
+
+1. fix(lab): step10 guard blocks agents ending the red phase  (5e7e541)
+   Problem: tdd-red ran `touch .tdd-red`, then `rm .tdd-red` itself (the prompt
+   says "then make it pass") and edited src/. The hook only checked edit tools,
+   so it only *asked*, like the instructions. Before and After both edited
+   src/ in 1 of 2 runs.
+   Change:
+   - examples/step10-hooks/scripts/hooks/guard-edits.sh: while .tdd-red exists,
+     deny shell commands (rm/unlink/mv/git ... .tdd-red) that remove it.
+   - examples/step10-hooks/scripts/hooks/lib.sh: new shell_command helper;
+     strip_root removes every spelling of the repo root (git root, physical
+     path, $PWD, payload cwd). Before, a symlinked path (/tmp vs /private/tmp)
+     failed open and infra/ edits were allowed.
+   - tdd-red.md / tdd-green.md: the user removes .tdd-red before tdd-green.
+   - Claude and Codex PreToolUse matchers (step10 and step11, plus the step11
+     plugin hooks.json) now include Bash so shell calls reach the guard.
+   - WORKSHOP.md Step 10 Read/After; docs/agent-compatibility.md: Copilot CLI
+     loads repo hooks only in trusted folders.
+   Result (Copilot CLI):
+   - tdd-red prompt: Before edited src/ in 2 of 3 runs; After 2/2 denied
+     "Red phase: only the user can end it", agent stopped, src/ untouched.
+   - infra prompt: Before 3/3 edited infra/main.bicep; After denied
+     "Edits under infra/ need a human".
+   - syntax error: After, post-edit hook reported CS1513.
+   - 13 direct hook payload cases pass (Copilot CLI, VS Code, Claude, Codex shapes).
+
+2. docs(lab): known issues and workarounds in WORKSHOP.md, this FIX.log
+   WORKSHOP.md gains a "Known issues" table plus notes in Steps 7 and 8.
+
+Validation of Steps 6-9 (no lab change needed)
+----------------------------------------------
+
+Step 6 TDD agents       Before: NaN% and Sunday week-start bug present, 0 tests.
+                        After: both fixed in TaskStatsCalculator.cs only, 2 new
+                        tests, 36/36 pass, lint 24. tdd-red edited src/ once
+                        (expected; Step 10 enforces it).
+Step 7 Debugger + MCP   Before (2 clean runs): fixed @key without a browser,
+                        guided by Step 2's docs/rules/blazor.md.
+                        After: Playwright MCP loaded from .mcp.json; reproduced
+                        in the browser before editing, verified again after.
+                        Gap shows in the evidence, not the fix (see known issues).
+Step 8 Diagnostics CPU  Before: CPU 7.4%, count never settled in 15 s, top frame
+                        Regex.IsMatch. After: CPU 0.12%, settles in 213 ms,
+                        no app hot frame. Fix confined to Bulk.razor (+ tests).
+Step 9 Diagnostics mem  Before: +191 MiB over 20 visits (4 MiB byte[] buffers).
+                        After: +4.4 MiB; fix confined to Dashboard.razor.
+
+Known issues (also in WORKSHOP.md "Known issues")
+-------------------------------------------------
+
+- Step 2 rules leak later answers: docs/rules/blazor.md has `@key="task.Id"`
+  (Step 7 fix) and "Debounce search inputs" (part of the Step 8 fix). Not
+  changed because Step 2 is parked and its checklist uses those rules.
+  Workaround: score Step 7 on browser reproduction, Step 8 on numbers.
+- Step 2 Before scores 3/4 without rules (parked, see handoff).
+- User-level skills/plugins/MCP contaminate Before runs (seen: ~/.agents/skills/tdd
+  took over tdd-red; an agent-browser plugin and chrome-devtools MCP gave Before a
+  browser). Workaround: disable them, or check the session log.
+- Repo skills lab-inspect-session and lab-score-run (facilitator tools) are
+  visible to attendee agents. Harmless for the step prompts.
+- Copilot CLI: repo hooks/skills/MCP need a trusted folder (no warning);
+  `--trust-folder` cannot be combined with `--resume`.
+- find-pid.sh takes the first CRUDTasksWithAgent process; run one app copy only.
+
+How to re-run the validation
+----------------------------
+
+  git clone --branch main <repo> /tmp/labN && cd /tmp/labN
+  for s in step01 step02 ... stepNN; do cp -R examples/$s*/. ./; git add -A; git commit -qm "lab: $s copy example"; done
+  copilot --trust-folder --allow-all -p "<exact prompt from WORKSHOP.md>" [--agent <name>]
+  git status --short   # score against the step checklist

@@ -33,6 +33,20 @@ Use the **Local** session target in Copilot Chat for this workshop. Agent handof
 
 The reset command only removes uncommitted changes, never the examples you committed. Your commit history then shows each step as "copy example" followed by "after", which is easy to compare with `git diff`. "Agent mode" means your tool's normal editing agent. Copying the folders in order gives the full solution.
 
+### Known issues
+
+Found while validating the steps (details in [FIX.log](FIX.log)).
+
+| Issue | Affects | Workaround |
+|---|---|---|
+| Your own user-level skills, plugins or MCP servers (for example a `tdd` skill or a browser MCP such as `chrome-devtools`) can do the job in Before, so there is no gap to show. | All steps, mostly 6 and 7 | Turn them off for the workshop, or check the session log for which skills and tools loaded. |
+| Step 2's rules (`docs/rules/blazor.md`) include the Step 7 fix (`@key`) and part of the Step 8 fix (debounce). With Step 2 installed, Before can fix both without a browser or measurements. | Steps 7, 8 | Step 7: score whether the agent **reproduced the bug in the browser before editing**, not only whether it fixed it. Step 8: score the measured numbers, not the fix. |
+| Step 2 Before often scores 3 or more without rules, because capable agents already know Blazor best practice. | Step 2 | Run Before twice and keep the lower score. Treat Step 2 as a demo of rules *loading* (References list), not of a big score gap. |
+| `tdd-red` sometimes edits `src/` when the prompt says "fix". | Step 6 | Expected: Step 10 enforces it. Note it and move on. |
+| Copilot CLI loads repo hooks, skills and MCP servers only in a trusted folder, and does not warn. `--trust-folder` cannot be combined with `--resume`. | Steps 7-10 (CLI) | Trust the folder when prompted, or use `copilot --trust-folder -p "…"` for one-off runs. VS Code: set `chat.useHooks`. |
+| `find-pid.sh` picks the first `CRUDTasksWithAgent` process; port 5280 can host only one copy. | Steps 8, 9 | Run only one copy of the app. Stop old `dotnet run` sessions first. |
+| After Step 10, `tdd-red` cannot delete `.tdd-red`; `tdd-green` asks you to. | Steps 10+ | Run `rm .tdd-red` yourself before switching to `tdd-green`. |
+
 ## Session 1: Instructions and agents
 
 ### Step 1: Project instructions (`AGENTS.md`)
@@ -224,7 +238,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 1. Open http://localhost:5280/board. Tick the first task. Note which checkboxes look ticked and which tasks are struck through.
 2. Reload the page. Compare.
-3. Ask the default agent the prompt from After. Note whether it can see the browser.
+3. Ask the default agent the prompt from After. Note whether it can see the browser. It may still fix the bug by reading code and the Step 2 rules ([Known issues](#known-issues)); what matters here is that it cannot show the bug in the browser.
 
 **Copy** `cp -R examples/step07-debugger-mcp/. ./ && git add -A && git commit -m "lab: step07 copy example"` → `.vscode/mcp.json`, `.mcp.json`, `.codex/config.toml`, `debugger` in `.agents/agents/`, `.github/agents/`, `.claude/agents/`, `.codex/agents/` (matrix rows 6, 10). Start or approve the `playwright` server in your tool.
 
@@ -252,6 +266,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 1. Open http://localhost:5280/bulk. Click **Generate 5,000 sample tasks**.
 2. Type `sample task 12` into Search, one key at a time. Note how long the count takes to settle.
 3. Type `[`, then a few more keys. The count stops updating; there is no error message.
+4. Run only one copy of the app; the skill's `find-pid.sh` measures the first one it finds ([Known issues](#known-issues)).
 
 **Copy** `cp -R examples/step08-diagnostics-skill/. ./ && git add -A && git commit -m "lab: step08 copy example"` → `.agents/skills/dotnet-diagnostics/` (`SKILL.md`, `scripts/`), `.claude/skills/dotnet-diagnostics` (symlink) (matrix row 4).
 
