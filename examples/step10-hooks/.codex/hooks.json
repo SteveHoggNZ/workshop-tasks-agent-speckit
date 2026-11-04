@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "apply_patch",
+        "matcher": "apply_patch|Bash",
         "hooks": [{ "type": "command", "command": "bash \"$(git rev-parse --show-toplevel)/scripts/hooks/guard-edits.sh\" --tool codex", "timeout": 10 }]
       }
     ],

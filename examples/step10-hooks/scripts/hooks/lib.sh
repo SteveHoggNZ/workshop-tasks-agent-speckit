@@ -17,7 +17,28 @@ edited_paths() {
     | [.path, .filePath, .file_path, .notebook_path, .newPath, .oldPath, (.filePaths // [])[], (.files // [])[]?, (.replacements // [])[]?.filePath?]
       + ([(.input // .patch // .command // "") | strings | scan("\\*\\*\\* (?:Add|Update|Delete) File: (.+)")[]])
     | .[] | select(type == "string" and . != "")
-  ' <<<"$EVENT" | sed -e "s#^$ROOT/##" -e 's#^\./##'
+  ' <<<"$EVENT" | strip_root
+}
+
+# The command line of a shell tool call (empty for other tools).
+shell_command() {
+  jq -r '
+    (.toolName // .tool_name // "") as $tool
+    | select($tool | test("bash|shell|terminal|powershell|exec"; "i"))
+    | (.toolArgs // .tool_input // {}) | (if type == "string" then (fromjson? // {command: .}) else . end)
+    | .command // .cmd // "" | if type == "array" then join(" ") else tostring end
+  ' <<<"$EVENT"
+}
+
+# Make absolute paths repo-relative. The repo can be reached by several spellings (symlinks such as
+# /tmp -> /private/tmp), so strip every known one; an unmatched absolute path would slip past the guards.
+strip_root() {
+  local real p args=()
+  real=$(cd "$ROOT" && pwd -P)
+  while IFS= read -r p; do
+    [[ -n "$p" && -d "$p" && "$(cd "$p" && pwd -P)" == "$real" ]] && args+=(-e "s#^$p/##")
+  done < <(printf '%s\n' "$ROOT" "$real" "$PWD" "$(jq -r '.cwd // empty' <<<"$EVENT" 2>/dev/null || true)")
+  sed "${args[@]}" -e 's#^\./##'
 }
 
 # PreToolUse deny. Copilot also gets the top-level fields of its CLI harness format.

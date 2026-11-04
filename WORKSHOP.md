@@ -307,14 +307,15 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 - Instructions ask; hooks enforce. A pre-tool hook can deny a tool call with a reason the agent sees.
 - One script per job serves all tools: `--tool copilot|claude|codex` picks the output format; `lib.sh` reads both payload styles.
-- `guard-edits.sh` blocks `infra/`, and everything outside `tests/` while `.tdd-red` exists. `tdd-red` now creates the marker; `tdd-green` removes it.
+- `guard-edits.sh` blocks `infra/`, and everything outside `tests/` while `.tdd-red` exists. `tdd-red` now creates the marker; only you remove it (`rm .tdd-red`) before switching to `tdd-green`. The guard also denies shell commands that delete it, or the agent could switch the guard off itself.
 - `build-after-edit.sh` runs after `.cs`/`.razor` edits and reports errors without blocking.
 
 **After**
 
-1. Repeat both Before prompts in new chats. The edits should be blocked with a clear reason.
+1. Repeat both Before prompts in new chats. The edits should be blocked with a clear reason, and `tdd-red` should stop and ask you to end the red phase.
 2. Make a deliberate syntax error through the agent. Its next message should mention the build error.
 3. Test a script directly: `echo '{"tool_name":"Edit","tool_input":{"file_path":"infra/main.bicep"}}' | bash scripts/hooks/guard-edits.sh --tool claude`.
+4. Before you continue with `tdd-green`, run `rm .tdd-red` yourself.
 
 **Try** Add `docs/` to the blocked paths in `guard-edits.sh` and ask the agent to edit a doc.
 
