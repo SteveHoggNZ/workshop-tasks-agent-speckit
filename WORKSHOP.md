@@ -71,14 +71,21 @@ The reset command only removes uncommitted changes, never the examples you commi
 **Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step01 after"` (or reset to discard the After run). `git status` should be clean before Step 2.
 
 ### Step 2: File-scoped instructions (`*.instructions.md`)
-**Before:** the review misses what you saw on `/board` and `/dashboard`; no Razor rules file is loaded (Copilot: References list).\
-**After:** your Razor rules file is loaded (Copilot: References lists `blazor.instructions.md`), and the review and new component follow each of your rules.
+**Before:** no Razor rules file is loaded (Copilot: References list), and a new list page scores 0–2 on the checklist below.\
+**After:** your Razor rules file is loaded (Copilot: References lists `blazor.instructions.md`), and the same prompt scores 3–4.
 
 **Before**
 
 1. Open http://localhost:5280/board. Tick the first task. Watch every checkbox after the list reorders. Untick it and watch again.
 2. Open http://localhost:5280/dashboard. Move between Dashboard and other pages ten times. Nothing visible happens; Step 9 measures it.
-3. Ask the agent: `Review Board.razor and Dashboard.razor for Blazor problems.` Note what it misses.
+3. In Agent mode, ask: `Add a /focus page that lists open tasks, has a search box, and refreshes when tasks change.`
+4. Score the change, one point each:
+   - Each row rendered in the `@foreach` has a stable `@key`.
+   - The page implements `IDisposable` and unsubscribes (`-=`) in `Dispose`.
+   - The change handler updates the UI with `InvokeAsync(StateHasChanged)`.
+   - The search is debounced (about 300 ms), not run on every keystroke.
+5. Models vary. If it scores 3 or more, run it once more in a new chat and keep the lower score.
+6. Reset.
 
 **Copy** `cp -R examples/step02-scoped-rules/. ./ && git add -A && git commit -m "lab: step02 copy example"` → `docs/rules/{blazor,tests}.md`, `.github/instructions/{blazor,tests}.instructions.md`, `.claude/rules/` (symlinks), `src/CRUDTasksWithAgent/Components/AGENTS.md`, `tests/AGENTS.md` (matrix row 3).
 
@@ -91,12 +98,12 @@ The reset command only removes uncommitted changes, never the examples you commi
 
 **After**
 
-1. Open `Board.razor` and repeat the review prompt in a new chat. The rules file should load. With only `Program.cs` open, it should not.
-2. Ask the agent to add a new component with a list and an event subscription. Check it follows each rule.
+1. Run the same prompt in a new chat and score it again. The rules file should load once the agent reads or writes a `.razor` file. In a chat that only touches `Program.cs`, it should not.
+2. Ask: `Review Board.razor and Dashboard.razor for Blazor problems.` Each finding should cite a rule from `docs/rules/blazor.md`.
 
 Do not fix the bugs yet. Steps 7, 8 and 9 cover them.
 
-**Try** Narrow `applyTo`/`paths:` to `**/Board.razor` and check whether the rules still load for `Dashboard.razor`.
+**Try** Narrow `applyTo`/`paths:` to `**/Board.razor`, reset, and run the prompt again. Does the `/focus` page still follow the rules?
 
 **Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step02 after"` (or reset to discard the After run). `git status` should be clean before Step 3.
 
