@@ -376,3 +376,7 @@ Finish with `dotnet build` and `dotnet test`.
 
 **Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step12 after"` on the feature branch. `git status` should be clean.
 
+
+## For facilitators
+
+The `lab-advisor` agent (`.agents/agents/lab-advisor.md`, with Copilot, Claude and Codex adapters) reviews a lab run rather than writing app code. It uses two skills: `lab-score-run` (evidence from the `lab/*` branch: diff since the copy commit, lint vs baseline, tests) and `lab-inspect-session` (did the instructions reach the model, which skills ran). Ask it: `Review the latest Step 1 run on this branch and suggest the smallest lab change.`
