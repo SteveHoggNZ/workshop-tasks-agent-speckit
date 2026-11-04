@@ -75,6 +75,7 @@ The target is relative to the link's folder, not to your shell. Git stores symli
 - Picks up `AGENTS.md`, `.github/instructions`, `.github/prompts`, `.github/skills`, `.agents/skills`, `.github/agents`, `.github/hooks` and `.vscode/mcp.json`. Whether it also reads nested `AGENTS.md`, `CLAUDE.md` or `.claude/*` is unverified.
 - Use the **Local** session target. Handoffs only work there.
 - Hooks: set `"chat.useHooks": true`. The Local target accepts Copilot event names (`preToolUse`) but sends Local payloads (`tool_name`, `tool_input`). Results show in the GitHub Copilot Chat Hooks output channel.
+- Hook decisions: `deny` and `ask` both work (verified in Copilot CLI 1.0.105: `ask` shows "Hook permission request" even with `--allow-all`; with `-p` it denies because no one can approve).
 - Copilot CLI: repo hooks, skills and MCP servers load only in a trusted folder. Untrusted runs skip them without a warning; for a one-off prompt run use `copilot --trust-folder -p "…"`.
 - MCP: start the server from the MCP view. Agent `tools` refer to it as `<server-key>/*`.
 - Check: the References list in a chat response shows which instruction files loaded.

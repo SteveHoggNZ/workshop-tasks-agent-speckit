@@ -46,6 +46,7 @@ Found while validating the steps (details in [FIX.log](FIX.log)).
 | Copilot CLI loads repo hooks, skills and MCP servers only in a trusted folder, and does not warn. `--trust-folder` cannot be combined with `--resume`. | Steps 7-10 (CLI) | Trust the folder when prompted, or use `copilot --trust-folder -p "…"` for one-off runs. VS Code: set `chat.useHooks`. |
 | `find-pid.sh` picks the first `CRUDTasksWithAgent` process; port 5280 can host only one copy. | Steps 8, 9 | Run only one copy of the app. Stop old `dotnet run` sessions first. |
 | After Step 10, `tdd-red` cannot delete `.tdd-red`; `tdd-green` asks you to. | Steps 10+ | Run `rm .tdd-red` yourself before switching to `tdd-green`. |
+| An agent may ask in chat for approval after a hook `deny`; approving in chat does not help, because the hook is stateless. `infra/` therefore uses `ask` (the tool's own prompt). | Step 10 | Approve in the tool's permission prompt, not in chat. In Codex, edit `infra/` yourself. |
 
 ## Session 1: Instructions and agents
 
@@ -308,7 +309,7 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 ### Step 10: Hooks (guard rails)
 **Before:** `git status` shows `tdd-red` edited `src/` and the agent edited `infra/main.bicep`.\
-**After:** both edits are blocked with a reason, `git status` shows no `src/` or `infra/` changes, and a syntax error is reported.
+**After:** the `src/` edit is denied with a reason, the `infra/` edit waits for your approval (deny it and `git status` shows no `infra/` change), and a syntax error is reported.
 
 **Before**
 
@@ -320,19 +321,19 @@ Step 11's example updates the plugin with the Session 2 skills, agents and hooks
 
 **Read**
 
-- Instructions ask; hooks enforce. A pre-tool hook can deny a tool call with a reason the agent sees.
+- Instructions ask; hooks enforce. A pre-tool hook returns `deny` (blocked, even if you approve in chat) or `ask` (the tool shows its own approval prompt; the call runs only if you approve).
 - One script per job serves all tools: `--tool copilot|claude|codex` picks the output format; `lib.sh` reads both payload styles.
-- `guard-edits.sh` blocks `infra/`, and everything outside `tests/` while `.tdd-red` exists. `tdd-red` now creates the marker; only you remove it (`rm .tdd-red`) before switching to `tdd-green`. The guard also denies shell commands that delete it, or the agent could switch the guard off itself.
+- `guard-edits.sh` asks before `infra/` edits, and denies everything outside `tests/` while `.tdd-red` exists. `tdd-red` now creates the marker; only you remove it (`rm .tdd-red`) before switching to `tdd-green`. The guard also denies shell commands that delete it, or the agent could switch the guard off itself.
 - `build-after-edit.sh` runs after `.cs`/`.razor` edits and reports errors without blocking.
 
 **After**
 
-1. Repeat both Before prompts in new chats. The edits should be blocked with a clear reason, and `tdd-red` should stop and ask you to end the red phase.
+1. Repeat both Before prompts in new chats. `tdd-red` should be denied and stop to ask you to end the red phase. The infra edit should show an approval prompt (Copilot CLI: "Hook permission request"): deny it first, then try again and approve it. Codex has no verified `ask`, so it denies instead; non-interactive runs (`copilot -p`) deny because no one can approve.
 2. Make a deliberate syntax error through the agent. Its next message should mention the build error.
 3. Test a script directly: `echo '{"tool_name":"Edit","tool_input":{"file_path":"infra/main.bicep"}}' | bash scripts/hooks/guard-edits.sh --tool claude`.
 4. Before you continue with `tdd-green`, run `rm .tdd-red` yourself.
 
-**Try** Add `docs/` to the blocked paths in `guard-edits.sh` and ask the agent to edit a doc.
+**Try** Change `emit_ask` to `emit_deny` for `infra/` and approve the edit in chat: it stays blocked. Or add `docs/` to the guarded paths and ask the agent to edit a doc.
 
 **Commit** Undo any **Try** edits to the example first (`git diff` shows them), then `git add -A && git commit -m "lab: step10 after"` (or reset to discard the After run). `git status` should be clean before Step 11.
 

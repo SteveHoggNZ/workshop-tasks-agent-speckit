@@ -48,6 +48,15 @@ emit_deny() {
     + (if $t == "copilot" then {permissionDecision: "deny", permissionDecisionReason: $r} else {} end)'
 }
 
+# PreToolUse ask: the tool shows its own approval prompt; the edit runs only if the user approves.
+# Codex has no verified "ask" support, so it falls back to deny rather than risk allowing silently.
+emit_ask() {
+  [[ "$TOOL" == codex ]] && { emit_deny "$1 Make this change yourself."; return; }
+  jq -n --arg r "$1" --arg t "$TOOL" '
+    {hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "ask", permissionDecisionReason: $r}}
+    + (if $t == "copilot" then {permissionDecision: "ask", permissionDecisionReason: $r} else {} end)'
+}
+
 # PostToolUse context for the agent (never blocks).
 emit_context() {
   jq -n --arg c "$1" --arg t "$TOOL" '

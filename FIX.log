@@ -37,6 +37,21 @@ Changes on main
 2. docs(lab): known issues and workarounds in WORKSHOP.md, this FIX.log
    WORKSHOP.md gains a "Known issues" table plus notes in Steps 7 and 8.
 
+3. fix(lab): step10 asks before infra/ edits instead of denying
+   Problem (seen live): the infra deny reason said "Ask the user first". The
+   agent asked in chat, the user approved, and the hook denied again: hooks
+   are stateless and a deny cannot be approved.
+   Change: lib.sh gains emit_ask (permissionDecision "ask"); guard-edits.sh
+   uses it for infra/. Red-phase checks run first and stay deny. Codex falls
+   back to deny (no verified "ask" support, so it never allows silently).
+   WORKSHOP.md Step 10 teaches deny vs ask; agent-compatibility.md notes it.
+   Result (Copilot CLI 1.0.105):
+   - interactive: "Hook permission request ... Do you want to allow this tool
+     call?" appeared even with --allow-all; approving applied the edit.
+   - copilot -p: "Denied, no one to approve" (fails closed).
+   - direct payloads: copilot/claude infra -> ask; codex infra -> deny;
+     red phase src/infra/rm marker -> deny; red phase tests -> allow.
+
 Validation of Steps 6-9 (no lab change needed)
 ----------------------------------------------
 

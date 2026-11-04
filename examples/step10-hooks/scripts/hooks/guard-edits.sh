@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse: deny edits under infra/, and edits outside tests/ while .tdd-red exists.
+# PreToolUse: ask a human before edits under infra/; deny edits outside tests/ while .tdd-red exists.
 # Only the user ends the red phase: shell commands that remove the marker are denied too.
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"
@@ -11,12 +11,12 @@ fi
 
 while IFS= read -r path; do
   [[ -z "$path" ]] && continue
-  if [[ "$path" == infra/* ]]; then
-    emit_deny "Edits under infra/ need a human. Ask the user first ($path)."
-    exit 0
-  fi
   if [[ -f "$ROOT/.tdd-red" && "$path" != tests/* ]]; then
     emit_deny "Red phase: only files under tests/ may change ($path). Stop here; the user ends the red phase and switches to tdd-green."
+    exit 0
+  fi
+  if [[ "$path" == infra/* ]]; then
+    emit_ask "Edits under infra/ need human approval ($path)."
     exit 0
   fi
 done < <(edited_paths)
